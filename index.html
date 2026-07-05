@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长维思 · 起号策略调整说明</title>
+<style>
+:root {
+  --ink: #17241d;
+  --ink-2: #31433a;
+  --muted: #6f7c73;
+  --paper: #f4f6ef;
+  --ivory: #fffdf7;
+  --line: #d9e0d4;
+  --green: #78957a;
+  --green-2: #49654f;
+  --green-3: #dce8db;
+  --orange: #c98350;
+  --orange-2: #e8b47f;
+  --red: #b86660;
+  --blue: #7b9ba0;
+  --gold: #c8a867;
+  --shadow: 0 24px 70px rgba(37, 56, 43, .13);
+  --serif: "Songti SC", "STSongti-SC-Regular", "Noto Serif CJK SC", "SimSun", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --mono: "SFMono-Regular", "Menlo", "Consolas", monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: #e6eadf; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.58;
+  background:
+    linear-gradient(135deg, rgba(73,101,79,.06) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 82% 6%, rgba(120,149,122,.20), transparent 34%),
+    radial-gradient(circle at 8% 18%, rgba(201,131,80,.13), transparent 30%),
+    linear-gradient(180deg, #f6f7f1, #e9eee3);
+  -webkit-font-smoothing: antialiased;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: rgba(244,246,239,.84);
+  border-bottom: 1px solid rgba(23,36,29,.08);
+  backdrop-filter: blur(18px);
+}
+.top-inner {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+}
+.brand {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  min-width: 230px;
+}
+.mark {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #f7f6ee;
+  background: linear-gradient(145deg, var(--green-2), #20362a);
+  font-weight: 900;
+}
+.brand b { display: block; font-size: 14px; }
+.brand span { display: block; color: var(--muted); font-size: 12px; }
+.nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 1px;
+}
+.nav a {
+  flex: 0 0 auto;
+  color: var(--ink);
+  text-decoration: none;
+  border: 1px solid rgba(23,36,29,.14);
+  background: rgba(255,253,247,.74);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 850;
+}
+.nav a:hover { border-color: var(--orange); color: #92552e; }
+.progress {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 9px;
+  z-index: 12;
+}
+.progress a {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: rgba(23,36,29,.22);
+  border: 1px solid rgba(255,253,247,.72);
+}
+.progress a:hover { background: var(--orange); transform: scale(1.35); }
+.book {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 28px 20px 70px;
+}
+.sheet {
+  position: relative;
+  min-height: 760px;
+  margin: 0 auto 28px;
+  padding: 44px 48px;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(23,36,29,.09);
+  background:
+    linear-gradient(90deg, rgba(120,149,122,.11), transparent 36%),
+    var(--ivory);
+  box-shadow: var(--shadow);
+  scroll-margin-top: 88px;
+}
+.sheet::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='170' height='170' viewBox='0 0 170 170' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2378957a' stroke-opacity='.13' stroke-width='1'%3E%3Cpath d='M-20 118 C32 88 58 88 110 118 S184 148 224 114'/%3E%3Cpath d='M-20 146 C32 116 58 116 110 146 S184 176 224 142'/%3E%3Cpath d='M-20 90 C32 60 58 60 110 90 S184 120 224 86'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right top;
+}
+.sheet.dark {
+  color: #f8fbf6;
+  background:
+    radial-gradient(circle at 86% 20%, rgba(201,131,80,.20), transparent 34%),
+    linear-gradient(135deg, #1c3428, #314b38 58%, #5f795f);
+}
+.sheet.dark::before { opacity: .34; filter: invert(1); }
+.sheet.compact { min-height: 680px; }
+.page-num {
+  position: absolute;
+  right: 34px;
+  bottom: 26px;
+  color: rgba(23,36,29,.30);
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.dark .page-num { color: rgba(255,255,255,.42); }
+.kicker {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 14px;
+  color: var(--orange);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.dark .kicker { color: #efbd8a; }
+h1, h2, h3, p, .grid, .flow, .chart-card, .quote-card, .matrix, .role-grid, .timeline { position: relative; z-index: 1; }
+h1, h2 {
+  margin: 0;
+  font-family: var(--serif);
+  letter-spacing: 0;
+}
+h1 {
+  max-width: 880px;
+  font-size: clamp(42px, 6vw, 74px);
+  line-height: 1.05;
+}
+h2 {
+  max-width: 920px;
+  font-size: clamp(30px, 4vw, 50px);
+  line-height: 1.15;
+}
+h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  line-height: 1.28;
+}
+p {
+  margin: 0;
+  color: var(--ink-2);
+}
+.dark p { color: #dfe8de; }
+.subtitle {
+  max-width: 760px;
+  margin-top: 22px;
+  color: #e8f0e6;
+  font-size: 18px;
+}
+.hl {
+  color: #fff;
+  background: linear-gradient(180deg, transparent 52%, rgba(201,131,80,.65) 52%);
+  padding: 0 .08em;
+}
+.light-hl {
+  color: #6f3b21;
+  background: linear-gradient(180deg, transparent 54%, rgba(232,180,127,.42) 54%);
+  padding: 0 .08em;
+  font-weight: 850;
+}
+.danger-hl {
+  color: #8e3732;
+  background: linear-gradient(180deg, transparent 54%, rgba(184,102,96,.22) 54%);
+  padding: 0 .08em;
+  font-weight: 850;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 34px;
+  align-items: center;
+  min-height: 620px;
+}
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 34px;
+}
+.pill {
+  display: inline-flex;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.09);
+  padding: 9px 13px;
+  color: inherit;
+  font-weight: 850;
+  font-size: 13px;
+}
+.decision-grid,
+.grid-2,
+.grid-3,
+.grid-4 {
+  display: grid;
+  gap: 16px;
+}
+.decision-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card,
+.metric,
+.panel,
+.chart-card {
+  position: relative;
+  z-index: 1;
+  border: 1px solid rgba(23,36,29,.10);
+  background: rgba(255,253,247,.84);
+  border-radius: 14px;
+  padding: 18px;
+}
+.dark .card,
+.dark .metric,
+.dark .panel,
+.dark .chart-card {
+  background: rgba(255,255,255,.075);
+  border-color: rgba(255,255,255,.16);
+}
+.decision-card { min-height: 132px; padding: 20px; }
+.decision-card b {
+  display: block;
+  margin-bottom: 10px;
+  color: #efbd8a;
+  font-size: 13px;
+}
+.decision-card strong {
+  color: #fff7dd;
+  font-size: 22px;
+  white-space: nowrap;
+}
+.decision-card p {
+  color: #fff;
+  font-weight: 850;
+}
+.section-head {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+  margin-bottom: 30px;
+}
+.one-line {
+  border-left: 3px solid var(--orange);
+  padding: 12px 0 12px 16px;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--ink);
+  background: linear-gradient(90deg, rgba(201,131,80,.14), transparent);
+}
+.dark .one-line { color: #fff; }
+.action {
+  margin-top: 10px;
+  border-left: 3px solid var(--green);
+  padding: 10px 0 10px 16px;
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 850;
+}
+.dark .action { color: #dfe8de; }
+.metric b {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--green-2);
+  font-family: var(--serif);
+  font-size: 38px;
+  line-height: 1;
+}
+.metric b.orange { color: var(--orange); }
+.metric b.red { color: var(--red); }
+.dark .metric b { color: #efbd8a; }
+.metric span,
+.card span,
+.note,
+.source {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.dark .metric span,
+.dark .card span,
+.dark .note,
+.dark .source { color: #cbd9ca; }
+.flow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 24px;
+}
+.flow .step {
+  min-height: 138px;
+  border-radius: 16px;
+  border: 1px solid rgba(120,149,122,.32);
+  background: rgba(255,253,247,.74);
+  padding: 18px;
+}
+.dark .flow .step {
+  background: rgba(255,255,255,.075);
+  border-color: rgba(232,180,127,.32);
+}
+.step em {
+  display: block;
+  margin-bottom: 12px;
+  color: var(--orange);
+  font-family: var(--mono);
+  font-style: normal;
+  font-weight: 900;
+}
+.dark .step em { color: #efbd8a; }
+.step b { display: block; margin-bottom: 8px; }
+.step p { font-size: 13px; }
+.quote-card {
+  max-width: 780px;
+  margin-top: 28px;
+  border-left: 4px solid var(--orange);
+  padding: 16px 0 16px 20px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 25px;
+  line-height: 1.34;
+}
+.dark .quote-card { color: #fff; }
+.chart-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.chart-title b { font-size: 16px; }
+.chart-title span { color: var(--muted); font-size: 12px; }
+svg { width: 100%; height: auto; display: block; overflow: visible; }
+.axis { stroke: #d4dbcf; stroke-width: 1; }
+.gridline { stroke: #e5eadf; stroke-width: 1; }
+.txt { fill: var(--ink-2); font: 12px var(--sans); }
+.tiny { fill: var(--muted); font: 11px var(--sans); }
+.dark .txt { fill: #eef5eb; }
+.dark .tiny { fill: #cbd9ca; }
+.bar-row {
+  display: grid;
+  grid-template-columns: 138px 1fr 46px;
+  gap: 10px;
+  align-items: center;
+  margin: 11px 0;
+}
+.bar-track {
+  height: 13px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #e7ece2;
+}
+.bar {
+  height: 100%;
+  width: var(--w);
+  border-radius: 999px;
+  background: var(--c);
+}
+.bar-row b { font-size: 12px; }
+.bar-row strong {
+  font-family: var(--mono);
+  font-size: 12px;
+  text-align: right;
+}
+.matrix {
+  display: grid;
+  grid-template-columns: 150px repeat(3, 1fr);
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(23,36,29,.12);
+}
+.matrix div {
+  padding: 11px 12px;
+  border-bottom: 1px solid rgba(23,36,29,.08);
+  border-right: 1px solid rgba(23,36,29,.08);
+  font-size: 12px;
+}
+.matrix .head {
+  color: #fff;
+  background: var(--green-2);
+  font-weight: 900;
+}
+.matrix .hot {
+  color: #7c3f1f;
+  background: rgba(201,131,80,.22);
+  font-weight: 900;
+}
+.matrix .mid {
+  background: rgba(120,149,122,.17);
+  font-weight: 850;
+}
+.matrix .cold { background: rgba(123,155,160,.12); }
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.phase {
+  min-height: 210px;
+  border-top: 5px solid var(--green);
+  border-radius: 0 0 14px 14px;
+  background: rgba(255,253,247,.82);
+  padding: 18px;
+}
+.phase:nth-child(2) { border-color: #8ba987; }
+.phase:nth-child(3) { border-color: var(--orange); }
+.phase:nth-child(4) { border-color: var(--gold); }
+.phase b {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.phase span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.role {
+  border-radius: 16px;
+  padding: 22px;
+  border: 1px solid rgba(23,36,29,.11);
+}
+.role.aw {
+  background: linear-gradient(145deg, rgba(120,149,122,.18), rgba(255,253,247,.9));
+}
+.role.operator {
+  background: linear-gradient(145deg, rgba(201,131,80,.18), rgba(255,253,247,.9));
+}
+.role h3 { font-size: 22px; }
+.role ul {
+  margin: 14px 0 0;
+  padding-left: 18px;
+  color: var(--ink-2);
+}
+.role li { margin-bottom: 7px; }
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.mini-table th,
+.mini-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(23,36,29,.10);
+  text-align: left;
+}
+.mini-table th {
+  color: #fff;
+  background: var(--green-2);
+}
+.mini-table td:last-child {
+  color: #7c3f1f;
+  font-weight: 900;
+}
+.reassure {
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: 22px;
+  align-items: center;
+}
+.signal-ring {
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at center, #fffdf7 0 38%, transparent 39%),
+    conic-gradient(var(--green) 0 43%, var(--orange) 43% 66%, var(--blue) 66% 84%, var(--red) 84% 100%);
+  box-shadow: inset 0 0 0 1px rgba(23,36,29,.08), 0 18px 42px rgba(37,56,43,.14);
+}
+.signal-ring div {
+  text-align: center;
+  font-weight: 900;
+  color: var(--green-2);
+}
+.signal-ring span {
+  display: block;
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+@media screen and (max-width: 960px) {
+  .top-inner { display: block; }
+  .nav { margin-top: 10px; }
+  .book { padding: 16px 12px 56px; }
+  .sheet { min-height: auto; padding: 30px 20px; border-radius: 14px; }
+  .hero-grid,
+  .section-head,
+  .decision-grid,
+  .grid-2,
+  .grid-3,
+  .grid-4,
+  .flow,
+  .timeline,
+  .role-grid,
+  .reassure { grid-template-columns: 1fr; }
+  .decision-grid { order: -1; }
+  .progress { display: none; }
+  .bar-row { grid-template-columns: 110px 1fr 44px; }
+  .matrix-wrap { overflow-x: auto; }
+  .matrix { min-width: 760px; }
+  h1 { font-size: 38px; }
+  h2 { font-size: 30px; }
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="mark">AW</div>
+      <div><b>成长维思起号策略调整说明</b><span>给AW演示版｜小红书单平台</span></div>
+    </div>
+    <nav class="nav">
+      <a href="#cover">结论</a>
+      <a href="#why">为什么调</a>
+      <a href="#notwrong">不是否定</a>
+      <a href="#newrhythm">新节奏</a>
+      <a href="#roles">分工</a>
+      <a href="#roadmap">阶段</a>
+      <a href="#confidence">信心</a>
+    </nav>
+  </div>
+</header>
+
+<nav class="progress" aria-label="阅读进度">
+  <a href="#cover" title="结论"></a>
+  <a href="#why" title="为什么调"></a>
+  <a href="#notwrong" title="不是否定"></a>
+  <a href="#newrhythm" title="新节奏"></a>
+  <a href="#roles" title="分工"></a>
+  <a href="#roadmap" title="阶段"></a>
+  <a href="#confidence" title="信心"></a>
+</nav>
+
+<main class="book">
+  <section class="sheet dark" id="cover">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker">Strategy Reset · XHS Launch</div>
+        <h1>成长维思的方向是对的，我们现在调整的是<span class="hl">起号节奏</span>。</h1>
+        <p class="subtitle">这不是推翻已有内容，也不是否定AW的专业价值。我们要做的是：先让小红书和目标妈妈更快看懂账号，再逐步放大。</p>
+        <div class="meta-row">
+          <span class="pill">小红书单平台</span>
+          <span class="pill">图文先测试</span>
+          <span class="pill">视频后放大</span>
+          <span class="pill">商业化暂缓</span>
+        </div>
+      </div>
+      <div class="decision-grid">
+        <div class="decision-card card"><b>我们保留什么</b><p><strong>专业底座</strong><br>心理咨询师妈妈 + 真实带娃 + 蒙氏方法</p></div>
+        <div class="decision-card card"><b>我们调整什么</b><p><strong>表达顺序</strong><br>先痛点场景，再专业解释</p></div>
+        <div class="decision-card card"><b>30天看什么</b><p><strong>内容信号</strong><br>点击、收藏、评论、关注转化</p></div>
+        <div class="decision-card card"><b>AW需要做什么</b><p><strong>继续真实</strong><br>素材和感受给出来，运营由我来接</p></div>
+      </div>
+    </div>
+    <div class="page-num">00</div>
+  </section>
+
+  <section class="sheet" id="why">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Why Adjust</div>
+        <h2>现在不是内容没价值，而是账号还没有被平台和用户准确识别。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：先修“被看见”和“被看懂”，再追求增长。</div>
+        <div class="action">动作：小红书单平台、低成本图文测试、用数据决定视频方向。</div>
+      </div>
+    </div>
+    <div class="grid-4">
+      <div class="metric"><b>39</b><span>账号还处于冷启动初期，平台标签还不稳定。</span></div>
+      <div class="metric"><b class="orange">6.4%</b><span>封面点击率低于10%基准，说明用户没有被第一眼抓住。</span></div>
+      <div class="metric"><b class="red">4.4%</b><span>视频完播率偏低，前3秒和视觉节奏需要先修。</span></div>
+      <div class="metric"><b>0</b><span>评论/收藏还没有形成有效反馈，需要设计低门槛互动。</span></div>
+    </div>
+    <div class="chart-card" style="margin-top:22px;">
+      <div class="chart-title"><b>当前链路断点</b><span>从内容发布到账号增长</span></div>
+      <svg viewBox="0 0 900 260" aria-label="当前链路断点">
+        <defs>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#78957a"/></marker>
+        </defs>
+        <g font-family="var(--sans)">
+          <rect x="34" y="82" width="132" height="70" rx="16" fill="#dce8db" stroke="#78957a"/><text x="66" y="113" font-weight="900" fill="#31433a">内容生产</text><text x="64" y="136" font-size="12" fill="#6f7c73">专业材料充足</text>
+          <rect x="214" y="82" width="132" height="70" rx="16" fill="#f3ddd0" stroke="#c98350"/><text x="247" y="113" font-weight="900" fill="#7c3f1f">精准曝光</text><text x="236" y="136" font-size="12" fill="#7c3f1f">当前断点</text>
+          <rect x="394" y="82" width="132" height="70" rx="16" fill="#f3ddd0" stroke="#c98350"/><text x="428" y="113" font-weight="900" fill="#7c3f1f">点击停留</text><text x="418" y="136" font-size="12" fill="#7c3f1f">需要修封面/3秒</text>
+          <rect x="574" y="82" width="132" height="70" rx="16" fill="#f4e7cb" stroke="#c8a867"/><text x="607" y="113" font-weight="900" fill="#6d5525">互动信号</text><text x="604" y="136" font-size="12" fill="#6d5525">要靠CTA建立</text>
+          <rect x="754" y="82" width="132" height="70" rx="16" fill="#dce8db" stroke="#78957a"/><text x="787" y="113" font-weight="900" fill="#31433a">持续增长</text><text x="783" y="136" font-size="12" fill="#6f7c73">后置结果</text>
+          <line x1="166" y1="117" x2="207" y2="117" stroke="#78957a" stroke-width="3" marker-end="url(#arrow)"/>
+          <line x1="346" y1="117" x2="387" y2="117" stroke="#78957a" stroke-width="3" marker-end="url(#arrow)"/>
+          <line x1="526" y1="117" x2="567" y2="117" stroke="#78957a" stroke-width="3" marker-end="url(#arrow)"/>
+          <line x1="706" y1="117" x2="747" y2="117" stroke="#78957a" stroke-width="3" marker-end="url(#arrow)"/>
+        </g>
+        <text x="214" y="192" fill="#b86660" font-size="13" font-weight="900">不是AW不专业，是平台还没有足够清楚地知道该把内容推给谁。</text>
+      </svg>
+    </div>
+    <div class="page-num">01</div>
+  </section>
+
+  <section class="sheet" id="notwrong">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Not A Reversal</div>
+        <h2>之前做的内容不是错了，它们是<span class="light-hl">专业资产</span>，现在需要换成小红书更容易理解的表达。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：方向保留，表达降维。</div>
+        <div class="action">动作：专业词先放后面，真实场景和用户痛点放前面。</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="chart-title"><b>表达方式调整</b><span>不是降低专业度，而是提高进入门槛的友好度</span></div>
+        <div class="matrix-wrap">
+          <div class="matrix">
+            <div class="head">原表达</div><div class="head">用户感受</div><div class="head">新表达</div><div class="head">目标</div>
+            <div>吸收性心智</div><div class="cold">像上课</div><div class="hot">宝宝发呆时，大脑正在工作</div><div class="mid">先抓住兴趣</div>
+            <div>精神胚胎</div><div class="cold">术语陌生</div><div class="hot">别急着改造孩子，他有自己的节奏</div><div class="mid">降低理解成本</div>
+            <div>无意识防御</div><div class="cold">概念偏重</div><div class="hot">吼完孩子后后悔，不是你坏，是你太累了</div><div class="mid">建立共鸣</div>
+          </div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><b>AW已经具备的三张底牌</b><span>这正是账号值得继续做的原因</span></div>
+        <div class="grid-2">
+          <div class="metric"><b>专业</b><span>心理咨询背景，让内容不是泛泛鸡汤。</span></div>
+          <div class="metric"><b class="orange">真实</b><span>4月龄宝宝妈妈身份，让内容有现场感。</span></div>
+          <div class="metric"><b>方法</b><span>蒙氏和亲子沟通方法，能给出行动建议。</span></div>
+          <div class="metric"><b class="red">温度</b><span>能理解妈妈焦虑，不靠恐吓驱动关注。</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="quote-card">我们不是把专业拿掉，而是把专业放到用户愿意继续看的位置。</div>
+    <div class="page-num">02</div>
+  </section>
+
+  <section class="sheet dark" id="newrhythm">
+    <div class="section-head">
+      <div>
+        <div class="kicker">New Rhythm</div>
+        <h2>接下来先不追“发得多”，先追<span class="hl">测得准</span>。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：图文是测试工具，视频是放大工具。</div>
+        <div class="action">动作：先用6-10条图文找出高信号选题，再拍视频。</div>
+      </div>
+    </div>
+    <div class="flow">
+      <div class="step"><em>01/04</em><b>主页先变清楚</b><p>3秒内让用户知道：你是谁，帮谁，解决什么。</p></div>
+      <div class="step"><em>02/04</em><b>图文先测问题</b><p>用低成本内容测试标题、封面、痛点和收藏价值。</p></div>
+      <div class="step"><em>03/04</em><b>视频再放大</b><p>只拍已经被图文验证过的题，重点修前3秒。</p></div>
+      <div class="step"><em>04/04</em><b>数据决定复制</b><p>不是凭感觉判断，而是看点击、收藏、评论、关注。</p></div>
+    </div>
+    <div class="chart-card" style="margin-top:24px;">
+      <div class="chart-title"><b>内容测试漏斗</b><span>30天内的最小闭环</span></div>
+      <svg viewBox="0 0 900 260" aria-label="内容测试漏斗">
+        <polygon points="64,40 836,40 758,92 142,92" fill="rgba(232,180,127,.80)"/>
+        <polygon points="142,108 758,108 678,160 222,160" fill="rgba(120,149,122,.82)"/>
+        <polygon points="222,176 678,176 600,228 300,228" fill="rgba(123,155,160,.78)"/>
+        <text x="346" y="72" fill="#1b2b21" font-weight="900">6-10条图文测试</text>
+        <text x="348" y="140" fill="#fff" font-weight="900">选出2个高信号方向</text>
+        <text x="350" y="208" fill="#fff" font-weight="900">拍4-6条短视频验证</text>
+        <text x="58" y="246" fill="#cbd9ca" font-size="12">判定标准：收藏率、评论质量、主页访问、关注转化、视频完播率。</text>
+      </svg>
+    </div>
+    <div class="page-num">03</div>
+  </section>
+
+  <section class="sheet" id="roles">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Role Split</div>
+        <h2>AW不用一个人扛运营，我来负责操盘和复盘，AW只需要稳定提供真实素材。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：AW做主体，我做系统。</div>
+        <div class="action">动作：素材、选题、发布、复盘分工明确，减少AW的无效消耗。</div>
+      </div>
+    </div>
+    <div class="role-grid">
+      <div class="role aw">
+        <h3>AW主要负责</h3>
+        <ul>
+          <li>提供真实带娃观察、情绪和判断。</li>
+          <li>按清单补拍B-roll：宝宝、互动、翻书、环境。</li>
+          <li>确认内容是否符合本人价值观和表达边界。</li>
+          <li>保留真实、温暖、专业的主体感。</li>
+        </ul>
+      </div>
+      <div class="role operator">
+        <h3>操盘手主要负责</h3>
+        <ul>
+          <li>把专业内容翻译成小红书语言。</li>
+          <li>做选题库、标签库、发布节奏和数据复盘。</li>
+          <li>判断哪些内容复制、哪些停止、哪些重拍。</li>
+          <li>把进度和策略变化同步给AW。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="quote-card">AW不需要每天怀疑“我是不是不适合做”，这件事由数据来回答；运营判断由我来承担。</div>
+    <div class="page-num">04</div>
+  </section>
+
+  <section class="sheet" id="roadmap">
+    <div class="section-head">
+      <div>
+        <div class="kicker">30-Day Roadmap</div>
+        <h2>每个阶段只修一个环节，修好了再进入下一步。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：节奏慢一点，确定性更高。</div>
+        <div class="action">动作：没拿到信号前，不扩大平台、不急着商业化。</div>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="phase"><b>Day 0-2｜账号变清楚</b><span>主页简介、封面模板、选题库、数据表先完成。目标：用户点进主页能看懂定位。</span></div>
+      <div class="phase"><b>Day 3-14｜图文有信号</b><span>发布6-10条图文，测试痛点、标题、封面和收藏价值。目标：找到2个相对有效方向。</span></div>
+      <div class="phase"><b>Day 15-30｜视频能留人</b><span>把有效选题拍成30-60秒视频，重点修前3秒、B-roll和字幕。目标：完播率先到8%-10%。</span></div>
+      <div class="phase"><b>30天后｜决定放大</b><span>如果有高信号内容，再考虑提高频率、同步视频号、设计轻量私域承接。</span></div>
+    </div>
+    <div class="chart-card" style="margin-top:24px;">
+      <div class="chart-title"><b>阶段目标不是一口气做完，而是逐层抬高</b><span>当前基线到30天目标</span></div>
+      <svg viewBox="0 0 900 280" aria-label="阶段目标柱状图">
+        <line x1="80" y1="226" x2="820" y2="226" class="axis"/>
+        <g class="tiny">
+          <text x="122" y="250">封面点击</text><text x="318" y="250">视频完播</text><text x="512" y="250">真实评论</text><text x="698" y="250">有效方向</text>
+        </g>
+        <g>
+          <rect x="126" y="154" width="46" height="72" rx="6" fill="#dce8db"/><text x="116" y="144" class="tiny">6.4%</text>
+          <rect x="184" y="106" width="46" height="120" rx="6" fill="#78957a"/><text x="174" y="96" class="tiny">8-10%</text>
+          <rect x="324" y="176" width="46" height="50" rx="6" fill="#f0d8c8"/><text x="316" y="166" class="tiny">4.4%</text>
+          <rect x="382" y="118" width="46" height="108" rx="6" fill="#c98350"/><text x="374" y="108" class="tiny">8-10%</text>
+          <rect x="522" y="214" width="46" height="12" rx="6" fill="#f2d3d0"/><text x="536" y="204" class="tiny">0</text>
+          <rect x="580" y="154" width="46" height="72" rx="6" fill="#b86660"/><text x="562" y="144" class="tiny">3条+</text>
+          <rect x="710" y="214" width="46" height="12" rx="6" fill="#dce8db"/><text x="724" y="204" class="tiny">0</text>
+          <rect x="768" y="130" width="46" height="96" rx="6" fill="#7b9ba0"/><text x="752" y="120" class="tiny">2个</text>
+        </g>
+        <g class="tiny">
+          <rect x="80" y="24" width="10" height="10" fill="#dce8db"/><text x="96" y="33">当前</text>
+          <rect x="150" y="24" width="10" height="10" fill="#78957a"/><text x="166" y="33">30天目标</text>
+        </g>
+      </svg>
+    </div>
+    <div class="page-num">05</div>
+  </section>
+
+  <section class="sheet compact" id="confidence">
+    <div class="section-head">
+      <div>
+        <div class="kicker">Confidence</div>
+        <h2>成长维思值得继续做。现在要做的是保护信心，也保护精力。</h2>
+      </div>
+      <div>
+        <div class="one-line">结论：用数据减少内耗，用分工降低压力。</div>
+        <div class="action">动作：AW配合素材和判断，我负责把每周结果讲清楚。</div>
+      </div>
+    </div>
+    <div class="reassure">
+      <div class="signal-ring">
+        <div>正确方向<br><span>调节奏，不推翻</span></div>
+      </div>
+      <div>
+        <div class="grid-2">
+          <div class="metric"><b>继续做</b><span>专业、真实、温度是账号的长期资产。</span></div>
+          <div class="metric"><b class="orange">慢一点</b><span>先跑通一个平台和一套内容公式。</span></div>
+          <div class="metric"><b>少内耗</b><span>不凭感觉否定自己，每周看数据。</span></div>
+          <div class="metric"><b class="red">不硬扛</b><span>运营系统、复盘和节奏由操盘手承担。</span></div>
+        </div>
+        <div class="quote-card">AW已经有内容价值。我们现在做的是让价值被更准确地看见。</div>
+      </div>
+    </div>
+    <div class="page-num">06</div>
+  </section>
+</main>
+</body>
+</html>
