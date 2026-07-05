@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长维思 · 小红书账号数据大屏模板</title>
+<style>
+:root {
+  --bg: #171310;
+  --panel: #241d18;
+  --panel-2: #302720;
+  --line: #44362c;
+  --ink: #f5eee7;
+  --muted: #b9a99b;
+  --green: #9aa77a;
+  --blue: #8ca6aa;
+  --orange: #d79562;
+  --orange-dark: #a76036;
+  --gold: #d9b871;
+  --red: #cf7c74;
+  --soft-green: rgba(154,167,122,0.16);
+  --soft-blue: rgba(140,166,170,0.15);
+  --soft-orange: rgba(215,149,98,0.18);
+  --soft-red: rgba(207,124,116,0.15);
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background:
+    linear-gradient(135deg, rgba(245,238,231,0.035) 0 1px, transparent 1px 18px),
+    radial-gradient(circle at 12% 8%, rgba(215,149,98,0.20), transparent 30%),
+    radial-gradient(circle at 86% 18%, rgba(217,184,113,0.12), transparent 28%),
+    var(--bg);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.55;
+}
+.wrap {
+  width: min(1440px, calc(100% - 36px));
+  margin: 0 auto;
+  padding: 24px 0 42px;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 18px;
+  margin-bottom: 18px;
+  padding: 28px;
+  border-radius: 18px;
+  border: 1px solid rgba(215,149,98,0.20);
+  background:
+    linear-gradient(135deg, rgba(48,39,32,0.96), rgba(36,29,24,0.86)),
+    radial-gradient(circle at 90% 8%, rgba(215,149,98,0.22), transparent 34%);
+  box-shadow: 0 24px 70px rgba(0,0,0,0.24);
+  position: relative;
+  overflow: hidden;
+}
+.header::after {
+  content: "";
+  position: absolute;
+  right: -30px;
+  top: -20px;
+  width: 320px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(215,149,98,0.18), transparent 68%);
+  pointer-events: none;
+}
+.header > * { position: relative; z-index: 1; }
+h1 {
+  font-family: "Songti SC", "STSongti-SC-Regular", "Noto Serif CJK SC", "SimSun", serif;
+  letter-spacing: 0;
+}
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(26px, 3.6vw, 42px);
+  line-height: 1.16;
+  letter-spacing: 0;
+}
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 12px;
+  color: #f1bc8c;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 20px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(36,29,24,0.74);
+}
+.control {
+  background: var(--panel);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  font-size: 13px;
+}
+select.control, input.control { min-height: 40px; }
+input[type="file"] { max-width: 280px; }
+button.control {
+  cursor: pointer;
+  font-weight: 700;
+}
+button.control:hover { border-color: var(--green); }
+.tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.tab {
+  border: 1px solid var(--line);
+  background: linear-gradient(180deg, rgba(255,255,255,0.035), transparent), var(--panel);
+  color: var(--muted);
+  border-radius: var(--radius);
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 13px;
+}
+.tab.active {
+  color: #24150f;
+  background: var(--orange);
+  border-color: var(--orange);
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.grid {
+  display: grid;
+  gap: 14px;
+}
+.kpis {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-bottom: 16px;
+}
+.kpi {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.06), transparent),
+    radial-gradient(circle at 90% 12%, rgba(215,149,98,0.10), transparent 34%),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--orange-dark), var(--orange), var(--gold));
+}
+.kpi .label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.kpi .value {
+  margin-top: 7px;
+  font-size: 26px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.kpi .hint {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.cards-2 { grid-template-columns: 1.05fr 0.95fr; }
+.cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.045), transparent),
+    var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: 0 18px 50px rgba(0,0,0,0.16);
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(215,149,98,0.06), transparent 28%);
+}
+.card > * { position: relative; z-index: 1; }
+.card h2, .card h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.chart {
+  min-height: 240px;
+  width: 100%;
+  overflow: hidden;
+  padding: 8px;
+  border: 1px solid rgba(68,54,44,0.7);
+  border-radius: 10px;
+  background: rgba(23,19,16,0.26);
+}
+.chart svg {
+  width: 100%;
+  height: 240px;
+  display: block;
+}
+.axis, .gridline { stroke: #3b4b48; stroke-width: 1; }
+.line-a { fill: none; stroke: var(--green); stroke-width: 3; }
+.line-b { fill: none; stroke: var(--orange); stroke-width: 3; }
+.dot-a { fill: var(--green); }
+.dot-b { fill: var(--orange); }
+.bar-row {
+  display: grid;
+  grid-template-columns: 118px 1fr 58px;
+  gap: 10px;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 13px;
+}
+.bar-track {
+  height: 10px;
+  background: #3a2f28;
+  border-radius: 999px;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--orange-dark), var(--orange), var(--gold));
+}
+.num { text-align: right; font-variant-numeric: tabular-nums; }
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1040px;
+  background: var(--panel);
+}
+th, td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  color: var(--muted);
+  background: var(--panel-2);
+  font-weight: 800;
+  white-space: nowrap;
+}
+tr:hover td { background: rgba(255,255,255,0.025); }
+tr:last-child td { border-bottom: none; }
+.title-cell {
+  max-width: 310px;
+  font-weight: 700;
+}
+.tag {
+  display: inline-flex;
+  border-radius: 5px;
+  padding: 3px 7px;
+  margin: 0 4px 4px 0;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.tag.green { color: #c8d1a4; background: var(--soft-green); }
+.tag.blue { color: #b7d1d4; background: var(--soft-blue); }
+.tag.orange { color: #f2bb8c; background: var(--soft-orange); }
+.tag.red { color: #efaaa4; background: var(--soft-red); }
+.tag.gold { color: #f0dc88; background: rgba(221,194,106,0.15); }
+.status {
+  border-radius: 5px;
+  padding: 4px 8px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.status.good { color: #c8d1a4; background: var(--soft-green); }
+.status.watch { color: #f2bb8c; background: var(--soft-orange); }
+.status.fix { color: #efaaa4; background: var(--soft-red); }
+.note-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.note-list li {
+  border-left: 4px solid var(--orange);
+  background: rgba(255,255,255,0.025);
+  border-radius: 6px;
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.note-list strong {
+  color: var(--ink);
+}
+.source-box {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+@media (max-width: 1100px) {
+  .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cards-2, .cards-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 680px) {
+  .wrap { width: min(100% - 22px, 1440px); padding-top: 16px; }
+  .header { display: grid; }
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kpi .value { font-size: 22px; }
+  .bar-row { grid-template-columns: 96px 1fr 48px; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="header">
+    <div>
+      <h1>成长维思小红书账号数据大屏</h1>
+      <div class="meta" id="dataMeta">示例数据版 · 等待导入真实小红书数据 · 更新：2026-07-06</div>
+    </div>
+    <div class="badge" id="dataBadge">数据状态：示例模板</div>
+  </header>
+
+  <section class="toolbar">
+    <input class="control" id="csvFile" type="file" accept=".csv,text/csv">
+    <select class="control" id="pillarFilter">
+      <option value="all">全部内容支柱</option>
+    </select>
+    <select class="control" id="formatFilter">
+      <option value="all">全部形式</option>
+    </select>
+    <input class="control" id="searchBox" type="search" placeholder="搜索标题/标签/痛点">
+    <button class="control" id="resetBtn">恢复示例数据</button>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="overview">数据总览</button>
+    <button class="tab" data-tab="content">内容分析</button>
+    <button class="tab" data-tab="topics">选题库</button>
+    <button class="tab" data-tab="shooting">拍摄库</button>
+    <button class="tab" data-tab="method">指标口径</button>
+  </nav>
+
+  <section class="tab-panel active" id="tab-overview">
+    <div class="grid kpis">
+      <div class="kpi"><div class="label">发布内容</div><div class="value" id="kpiPosts">-</div><div class="hint">当前筛选范围</div></div>
+      <div class="kpi"><div class="label">总曝光</div><div class="value" id="kpiImpressions">-</div><div class="hint">平台测试流量</div></div>
+      <div class="kpi"><div class="label">总观看/点击</div><div class="value" id="kpiViews">-</div><div class="hint">封面和标题承接</div></div>
+      <div class="kpi"><div class="label">平均点击率</div><div class="value" id="kpiCtr">-</div><div class="hint">目标先到8%-10%</div></div>
+      <div class="kpi"><div class="label">平均收藏率</div><div class="value" id="kpiCollect">-</div><div class="hint">内容实用价值</div></div>
+      <div class="kpi"><div class="label">新增关注</div><div class="value" id="kpiFollows">-</div><div class="hint">主页承接能力</div></div>
+    </div>
+
+    <div class="grid cards-2">
+      <div class="card">
+        <h2>趋势观察</h2>
+        <div class="chart" id="trendChart"></div>
+      </div>
+      <div class="card">
+        <h2>本期洞察</h2>
+        <ul class="note-list" id="insightList"></ul>
+      </div>
+    </div>
+
+    <div class="grid cards-2" style="margin-top:14px;">
+      <div class="card">
+        <h2>内容支柱效率</h2>
+        <div id="pillarBars"></div>
+      </div>
+      <div class="card">
+        <h2>痛点表现排行</h2>
+        <div id="painBars"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-content">
+    <div class="card">
+      <h2>内容表现明细</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>日期</th><th>标题</th><th>形式</th><th>自动标签</th><th class="num">曝光</th><th class="num">观看</th>
+              <th class="num">点击率</th><th class="num">收藏率</th><th class="num">评论率</th><th class="num">关注</th><th>状态</th><th>建议</th>
+            </tr>
+          </thead>
+          <tbody id="contentRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-topics">
+    <div class="grid cards-2">
+      <div class="card">
+        <h2>发布前选题库</h2>
+        <p>每个选题在发布前先打“内容支柱、年龄段、痛点、钩子、CTA”五个铆钉。真实发布后，数据会反向验证这些标签。</p>
+      </div>
+      <div class="card">
+        <h2>本周选题原则</h2>
+        <ul class="note-list">
+          <li><strong>先测痛点：</strong>标题必须是家长会搜索的问题。</li>
+          <li><strong>先做图文：</strong>图文跑出收藏或评论后，再升级为视频。</li>
+          <li><strong>少讲术语：</strong>蒙氏/心理学概念必须翻译成场景语言。</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <h2>选题库</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>优先级</th><th>选题</th><th>内容支柱</th><th>年龄段</th><th>痛点</th><th>钩子</th><th>CTA</th><th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="topicRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-shooting">
+    <div class="grid cards-3">
+      <div class="card"><h3>素材原则</h3><p>每条口播后补拍30秒B-roll：宝宝表情、互动、翻书、环境空镜、妈妈反应。</p></div>
+      <div class="card"><h3>剪辑原则</h3><p>30-60秒视频，每3-5秒必须有视觉变化，关键词字幕单独强调。</p></div>
+      <div class="card"><h3>封面原则</h3><p>人物或主体清晰，标题最多2行，文字不超过画面30%，发布前去水印。</p></div>
+    </div>
+    <div class="card" style="margin-top:14px;">
+      <h2>拍摄库</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>素材类型</th><th>要拍什么</th><th>可服务选题</th><th>时长</th><th>优先级</th><th>状态</th>
+            </tr>
+          </thead>
+          <tbody id="shootRows"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="tab-panel" id="tab-method">
+    <div class="grid cards-2">
+      <div class="card">
+        <h2>导入字段</h2>
+        <p>CSV建议字段：date,title,format,impressions,views,likes,collects,comments,shares,follows,completion,notes。字段名不区分大小写；没有的字段会按0处理。</p>
+      </div>
+      <div class="card">
+        <h2>自动标签逻辑</h2>
+        <p>看板会根据标题和notes识别内容支柱、年龄段、痛点、钩子类型。若后续导出的数据包含手动标签，可在CSV里增加pillar,ageStage,pain,hook字段覆盖自动识别。</p>
+      </div>
+      <div class="card">
+        <h2>核心指标</h2>
+        <ul class="note-list">
+          <li><strong>点击率：</strong>views / impressions，用于判断封面和标题。</li>
+          <li><strong>收藏率：</strong>collects / views，用于判断内容实用价值。</li>
+          <li><strong>评论率：</strong>comments / views，用于判断共鸣和互动入口。</li>
+          <li><strong>信号分：</strong>点击、收藏、评论、关注的综合分，用于排序选题。</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h2>数据限制</h2>
+        <p>当前为模板和示例数据，不代表真实账号表现。真实复盘需要小红书后台导出的逐条笔记数据和账号每日汇总数据。</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="source-box">来源说明：本模板基于成长维思现有策略文档与账号诊断口径制作。示例数据仅用于验证页面结构、指标计算和自动标签逻辑。</div>
+</main>
+
+<script>
+const samplePosts = [
+  {date:"2026-07-08", title:"孩子总发脾气怎么办？3个心理学方法先稳住情绪", format:"图文", impressions:520, views:82, likes:8, collects:13, comments:3, shares:1, follows:2, completion:null, notes:"高频痛点 图文测试"},
+  {date:"2026-07-09", title:"0-3岁宝宝敏感期全攻略，建议收藏", format:"图文", impressions:760, views:118, likes:14, collects:22, comments:2, shares:4, follows:3, completion:null, notes:"清单型 收藏"},
+  {date:"2026-07-10", title:"吼完孩子后总后悔？不是你坏，是你太累了", format:"图文", impressions:430, views:71, likes:9, collects:8, comments:5, shares:2, follows:1, completion:null, notes:"妈妈情绪 共鸣"},
+  {date:"2026-07-11", title:"宝宝盯着窗帘看了10分钟，我才懂他不是在发呆", format:"图文", impressions:390, views:54, likes:5, collects:7, comments:1, shares:1, follows:1, completion:null, notes:"真实观察 0-6个月"},
+  {date:"2026-07-13", title:"孩子不爱分享不是自私，可能是这个阶段到了", format:"图文", impressions:610, views:96, likes:11, collects:15, comments:4, shares:3, follows:2, completion:null, notes:"天性解读 3岁"},
+  {date:"2026-07-15", title:"孩子发脾气，不是他不听话，是大脑还没长好", format:"视频", impressions:840, views:112, likes:16, collects:10, comments:5, shares:2, follows:4, completion:0.092, notes:"视频验证 前3秒反常识"},
+  {date:"2026-07-17", title:"你越催孩子，他越慢：磨蹭背后的心理原因", format:"视频", impressions:690, views:78, likes:9, collects:6, comments:2, shares:1, follows:1, completion:0.071, notes:"视频验证 磨蹭"},
+  {date:"2026-07-18", title:"睡前10分钟聊这3件事，孩子安全感更稳", format:"图文", impressions:580, views:91, likes:10, collects:17, comments:2, shares:3, follows:2, completion:null, notes:"养育实操 睡前话题"}
+];
+
+const topicLibrary = [
+  {priority:"P0", title:"孩子总发脾气怎么办？3步先稳住情绪", pillar:"高频痛点", age:"1-3岁", pain:"发脾气", hook:"痛点型", cta:"评论报年龄", status:"待图文测试"},
+  {priority:"P0", title:"0-3岁宝宝敏感期全攻略，建议收藏", pillar:"养育实操", age:"0-3岁", pain:"敏感期", hook:"清单型", cta:"收藏", status:"待发布"},
+  {priority:"P0", title:"孩子不爱分享不是自私，可能是这个阶段到了", pillar:"天性解读", age:"1-3岁", pain:"不分享", hook:"反常识型", cta:"讲经历", status:"待图文测试"},
+  {priority:"P1", title:"吼完孩子后总后悔？心理咨询师妈妈也经历过", pillar:"妈妈情绪", age:"泛0-6岁", pain:"妈妈愧疚", hook:"真实故事型", cta:"评论扣1", status:"待拍摄"},
+  {priority:"P1", title:"你越催孩子，他越慢，不是他故意磨蹭", pillar:"高频痛点", age:"3-6岁", pain:"磨蹭", hook:"反常识型", cta:"站队", status:"待视频验证"},
+  {priority:"P1", title:"宝宝盯着一个东西看很久，要不要打断？", pillar:"天性解读", age:"0-6个月", pain:"专注力", hook:"真实观察型", cta:"分享场景", status:"待图文测试"},
+  {priority:"P2", title:"睡前10分钟聊这3件事，孩子安全感更稳", pillar:"养育实操", age:"3-6岁", pain:"安全感", hook:"数字清单型", cta:"收藏", status:"待发布"}
+];
+
+const shootingLibrary = [
+  {type:"宝宝表情", shot:"宝宝发呆、看窗帘、看玩具的特写", topic:"发呆不是无聊、专注力、吸收环境", duration:"30秒", priority:"P0", status:"待补拍"},
+  {type:"亲子互动", shot:"抱宝宝、对视、轻声安抚、换玩具", topic:"安全感、情绪安抚、真实妈妈场景", duration:"45秒", priority:"P0", status:"待补拍"},
+  {type:"妈妈反应", shot:"深夜坐床边、叹气、翻书、写笔记", topic:"妈妈情绪、吼完后悔、心理咨询师妈妈", duration:"45秒", priority:"P0", status:"已有部分"},
+  {type:"书和道具", shot:"翻蒙氏书、写选题卡、桌面空镜", topic:"专业背书、方法解释、图文素材", duration:"30秒", priority:"P1", status:"待补拍"},
+  {type:"环境空镜", shot:"窗帘光影、婴儿床、客厅、玩具区", topic:"转场、B-roll、封面底图", duration:"60秒", priority:"P1", status:"待补拍"}
+];
+
+let rawPosts = samplePosts.map(x => ({...x}));
+let activeTab = "overview";
+
+function n(value) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function pct(value, digits = 1) {
+  if (!Number.isFinite(value)) return "-";
+  return (value * 100).toFixed(digits) + "%";
+}
+
+function compact(value) {
+  const num = n(value);
+  if (num >= 10000) return (num / 10000).toFixed(1) + "万";
+  return num.toLocaleString("zh-CN");
+}
+
+function inferTags(post) {
+  const text = `${post.title || ""} ${post.notes || ""}`.toLowerCase();
+  const has = (pattern) => pattern.test(text);
+  let pillar = post.pillar || "高频痛点";
+  if (has(/妈妈|后悔|吼|崩溃|焦虑|太累|不够好|情绪/)) pillar = "妈妈情绪";
+  if (has(/天性|高敏感|慢热|观察型|体验型|性格|不分享|自私|发呆|专注/)) pillar = "天性解读";
+  if (has(/蒙氏|方法|步骤|清单|指南|这样做|话术|沟通|游戏|安全感|敏感期/)) pillar = "养育实操";
+  if (has(/发脾气|磨蹭|咬人|尖叫|打人|分离|睡|顶嘴|说谎|怎么办/)) pillar = "高频痛点";
+  if (post.pillar) pillar = post.pillar;
+
+  let ageStage = post.ageStage || "泛0-6岁";
+  if (has(/4个月|0-6个月|婴儿|宝宝盯/)) ageStage = "0-6个月";
+  else if (has(/6-12个月|1岁前/)) ageStage = "6-12个月";
+  else if (has(/0-3岁|1-3岁|2岁|3岁|敏感期/)) ageStage = "1-3岁";
+  else if (has(/3-6岁|4岁|5岁|6岁|作业/)) ageStage = "3-6岁";
+  if (post.ageStage) ageStage = post.ageStage;
+
+  let pain = post.pain || "泛育儿困惑";
+  const painRules = [
+    ["发脾气", /发脾气|哭闹|情绪/],
+    ["磨蹭", /磨蹭|拖拉|越催越慢/],
+    ["敏感期", /敏感期|咬人|尖叫/],
+    ["不分享", /不分享|自私/],
+    ["安全感", /安全感|分离|怕黑|睡前/],
+    ["妈妈愧疚", /后悔|吼|太累|坏妈妈|崩溃/],
+    ["专注力", /发呆|盯着|专注/]
+  ];
+  for (const [label, pattern] of painRules) {
+    if (has(pattern)) { pain = label; break; }
+  }
+  if (post.pain) pain = post.pain;
+
+  let hook = post.hook || "痛点型";
+  if (has(/[0-9一二三四五六七八九十]+个|[0-9一二三四五六七八九十]+件|全攻略|清单|指南/)) hook = "数字清单型";
+  if (has(/不是|其实|你以为|越.*越|反而/)) hook = "反常识型";
+  if (has(/我|我家|当妈|真实|亲测/)) hook = "真实故事型";
+  if (post.hook) hook = post.hook;
+
+  return { pillar, ageStage, pain, hook };
+}
+
+function enrich(post) {
+  const tags = inferTags(post);
+  const impressions = n(post.impressions);
+  const views = n(post.views);
+  const likes = n(post.likes);
+  const collects = n(post.collects);
+  const comments = n(post.comments);
+  const shares = n(post.shares);
+  const follows = n(post.follows);
+  const ctr = impressions ? views / impressions : 0;
+  const collectRate = views ? collects / views : 0;
+  const commentRate = views ? comments / views : 0;
+  const followRate = views ? follows / views : 0;
+  const engagementRate = views ? (likes + collects + comments + shares) / views : 0;
+  const signalScore = (ctr * 35 + collectRate * 30 + commentRate * 20 + followRate * 15) * 100;
+  let state = "观察";
+  let suggestion = "继续观察同类选题";
+  if (collectRate >= 0.10 || signalScore >= 9) {
+    state = "放大";
+    suggestion = "进入视频候选池，换角度复制一条";
+  } else if (ctr < 0.08 && impressions > 300) {
+    state = "修封面";
+    suggestion = "标题和封面点击理由不够强";
+  } else if (commentRate >= 0.04) {
+    state = "强共鸣";
+    suggestion = "评论区深挖痛点，整理下一条选题";
+  }
+  return {...post, ...tags, impressions, views, likes, collects, comments, shares, follows, ctr, collectRate, commentRate, followRate, engagementRate, signalScore, state, suggestion};
+}
+
+function getFilteredPosts() {
+  const pillar = document.getElementById("pillarFilter").value;
+  const format = document.getElementById("formatFilter").value;
+  const query = document.getElementById("searchBox").value.trim().toLowerCase();
+  return rawPosts.map(enrich).filter(post => {
+    if (pillar !== "all" && post.pillar !== pillar) return false;
+    if (format !== "all" && post.format !== format) return false;
+    const haystack = `${post.title} ${post.pillar} ${post.ageStage} ${post.pain} ${post.hook} ${post.notes || ""}`.toLowerCase();
+    if (query && !haystack.includes(query)) return false;
+    return true;
+  });
+}
+
+function populateFilters() {
+  const enriched = rawPosts.map(enrich);
+  const pillars = [...new Set(enriched.map(p => p.pillar))];
+  const formats = [...new Set(enriched.map(p => p.format || "未知"))];
+  const pillarFilter = document.getElementById("pillarFilter");
+  const formatFilter = document.getElementById("formatFilter");
+  const currentPillar = pillarFilter.value;
+  const currentFormat = formatFilter.value;
+  pillarFilter.innerHTML = '<option value="all">全部内容支柱</option>' + pillars.map(x => `<option value="${x}">${x}</option>`).join("");
+  formatFilter.innerHTML = '<option value="all">全部形式</option>' + formats.map(x => `<option value="${x}">${x}</option>`).join("");
+  pillarFilter.value = pillars.includes(currentPillar) ? currentPillar : "all";
+  formatFilter.value = formats.includes(currentFormat) ? currentFormat : "all";
+}
+
+function updateKpis(posts) {
+  const sum = (field) => posts.reduce((acc, p) => acc + n(p[field]), 0);
+  const impressions = sum("impressions");
+  const views = sum("views");
+  const collects = sum("collects");
+  const follows = sum("follows");
+  document.getElementById("kpiPosts").textContent = posts.length;
+  document.getElementById("kpiImpressions").textContent = compact(impressions);
+  document.getElementById("kpiViews").textContent = compact(views);
+  document.getElementById("kpiCtr").textContent = pct(impressions ? views / impressions : 0);
+  document.getElementById("kpiCollect").textContent = pct(views ? collects / views : 0);
+  document.getElementById("kpiFollows").textContent = compact(follows);
+}
+
+function groupBy(posts, key) {
+  const map = new Map();
+  posts.forEach(post => {
+    const name = post[key] || "未识别";
+    if (!map.has(name)) map.set(name, []);
+    map.get(name).push(post);
+  });
+  return [...map.entries()].map(([name, rows]) => ({
+    name,
+    rows,
+    score: rows.reduce((acc, row) => acc + row.signalScore, 0) / rows.length,
+    views: rows.reduce((acc, row) => acc + row.views, 0),
+    collects: rows.reduce((acc, row) => acc + row.collects, 0),
+    comments: rows.reduce((acc, row) => acc + row.comments, 0)
+  })).sort((a, b) => b.score - a.score);
+}
+
+function renderBars(containerId, groups) {
+  const max = Math.max(...groups.map(g => g.score), 1);
+  document.getElementById(containerId).innerHTML = groups.map(group => {
+    const width = Math.max(6, group.score / max * 100);
+    return `<div class="bar-row">
+      <div>${group.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${width}%"></div></div>
+      <div class="num">${group.score.toFixed(1)}</div>
+    </div>`;
+  }).join("");
+}
+
+function renderTrend(posts) {
+  const rows = [...posts].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  const width = 760;
+  const height = 240;
+  const pad = 32;
+  const maxValue = Math.max(...rows.flatMap(r => [r.impressions, r.views]), 1);
+  const x = (i) => rows.length === 1 ? width / 2 : pad + i * ((width - pad * 2) / (rows.length - 1));
+  const y = (v) => height - pad - (v / maxValue) * (height - pad * 2);
+  const path = (field) => rows.map((r, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(r[field]).toFixed(1)}`).join(" ");
+  const dots = (field, cls) => rows.map((r, i) => `<circle class="${cls}" cx="${x(i)}" cy="${y(r[field])}" r="4"><title>${r.date} ${field}: ${r[field]}</title></circle>`).join("");
+  document.getElementById("trendChart").innerHTML = `<svg viewBox="0 0 ${width} ${height}" preserveAspectRatio="none" role="img" aria-label="曝光和观看趋势">
+    <line class="gridline" x1="${pad}" y1="${pad}" x2="${width-pad}" y2="${pad}"></line>
+    <line class="gridline" x1="${pad}" y1="${height/2}" x2="${width-pad}" y2="${height/2}"></line>
+    <line class="axis" x1="${pad}" y1="${height-pad}" x2="${width-pad}" y2="${height-pad}"></line>
+    <path class="line-a" d="${path("impressions")}"></path>
+    <path class="line-b" d="${path("views")}"></path>
+    ${dots("impressions", "dot-a")}
+    ${dots("views", "dot-b")}
+    <text x="${pad}" y="20" fill="#b9a99b" font-size="12">橄榄绿：曝光 · 橙色：观看/点击</text>
+  </svg>`;
+}
+
+function renderInsights(posts) {
+  if (!posts.length) {
+    document.getElementById("insightList").innerHTML = "<li><strong>暂无数据：</strong>请导入CSV或恢复示例数据。</li>";
+    return;
+  }
+  const top = [...posts].sort((a, b) => b.signalScore - a.signalScore)[0];
+  const weakestCtr = [...posts].filter(p => p.impressions > 0).sort((a, b) => a.ctr - b.ctr)[0];
+  const topPillar = groupBy(posts, "pillar")[0];
+  const videoRows = posts.filter(p => p.format === "视频" && p.completion != null);
+  const avgCompletion = videoRows.length ? videoRows.reduce((acc, p) => acc + n(p.completion), 0) / videoRows.length : null;
+  const items = [
+    `<li><strong>最高信号内容：</strong>${top.title}。当前综合信号分 ${top.signalScore.toFixed(1)}，建议进入复制或视频候选池。</li>`,
+    `<li><strong>最强内容支柱：</strong>${topPillar.name}。平均信号分 ${topPillar.score.toFixed(1)}，下周优先保留这个方向。</li>`,
+    `<li><strong>点击短板：</strong>${weakestCtr.title} 的点击率为 ${pct(weakestCtr.ctr)}，优先检查标题和封面是否足够具体。</li>`
+  ];
+  if (avgCompletion != null) {
+    items.push(`<li><strong>视频留存：</strong>当前视频平均完播率 ${pct(avgCompletion)}，短期目标先到8%-10%，再冲15%。</li>`);
+  }
+  document.getElementById("insightList").innerHTML = items.join("");
+}
+
+function renderContentRows(posts) {
+  const rows = [...posts].sort((a, b) => b.date.localeCompare(a.date)).map(post => {
+    const statusClass = post.state === "放大" || post.state === "强共鸣" ? "good" : post.state === "修封面" ? "fix" : "watch";
+    return `<tr>
+      <td>${post.date || ""}</td>
+      <td class="title-cell">${post.title || ""}</td>
+      <td>${post.format || ""}</td>
+      <td>
+        <span class="tag green">${post.pillar}</span>
+        <span class="tag blue">${post.ageStage}</span>
+        <span class="tag orange">${post.pain}</span>
+        <span class="tag gold">${post.hook}</span>
+      </td>
+      <td class="num">${compact(post.impressions)}</td>
+      <td class="num">${compact(post.views)}</td>
+      <td class="num">${pct(post.ctr)}</td>
+      <td class="num">${pct(post.collectRate)}</td>
+      <td class="num">${pct(post.commentRate)}</td>
+      <td class="num">${compact(post.follows)}</td>
+      <td><span class="status ${statusClass}">${post.state}</span></td>
+      <td>${post.suggestion}</td>
+    </tr>`;
+  }).join("");
+  document.getElementById("contentRows").innerHTML = rows || '<tr><td colspan="12">暂无内容数据</td></tr>';
+}
+
+function renderTopicRows() {
+  document.getElementById("topicRows").innerHTML = topicLibrary.map(item => `<tr>
+    <td><span class="tag ${item.priority === "P0" ? "red" : item.priority === "P1" ? "orange" : "blue"}">${item.priority}</span></td>
+    <td class="title-cell">${item.title}</td>
+    <td><span class="tag green">${item.pillar}</span></td>
+    <td>${item.age}</td>
+    <td>${item.pain}</td>
+    <td>${item.hook}</td>
+    <td>${item.cta}</td>
+    <td>${item.status}</td>
+  </tr>`).join("");
+}
+
+function renderShootRows() {
+  document.getElementById("shootRows").innerHTML = shootingLibrary.map(item => `<tr>
+    <td><span class="tag blue">${item.type}</span></td>
+    <td>${item.shot}</td>
+    <td>${item.topic}</td>
+    <td>${item.duration}</td>
+    <td><span class="tag ${item.priority === "P0" ? "red" : "orange"}">${item.priority}</span></td>
+    <td>${item.status}</td>
+  </tr>`).join("");
+}
+
+function renderAll() {
+  populateFilters();
+  const posts = getFilteredPosts();
+  updateKpis(posts);
+  renderTrend(posts);
+  renderInsights(posts);
+  renderBars("pillarBars", groupBy(posts, "pillar"));
+  renderBars("painBars", groupBy(posts, "pain"));
+  renderContentRows(posts);
+  renderTopicRows();
+  renderShootRows();
+}
+
+function parseCsv(text) {
+  const rows = [];
+  let row = [];
+  let field = "";
+  let quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+    if (char === '"' && quoted && next === '"') {
+      field += '"';
+      i++;
+    } else if (char === '"') {
+      quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      row.push(field);
+      field = "";
+    } else if ((char === "\n" || char === "\r") && !quoted) {
+      if (field || row.length) {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      }
+      if (char === "\r" && next === "\n") i++;
+    } else {
+      field += char;
+    }
+  }
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  if (!rows.length) return [];
+  const headers = rows[0].map(h => h.trim().toLowerCase());
+  return rows.slice(1).filter(r => r.some(Boolean)).map(r => {
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (r[i] || "").trim());
+    return {
+      date: obj.date || obj["发布日期"] || obj["发布时间"] || "",
+      title: obj.title || obj["标题"] || "",
+      format: obj.format || obj["形式"] || obj["内容形式"] || "未知",
+      impressions: n(obj.impressions || obj["曝光"] || obj["展现"]),
+      views: n(obj.views || obj["观看"] || obj["点击"] || obj["阅读"]),
+      likes: n(obj.likes || obj["点赞"]),
+      collects: n(obj.collects || obj["收藏"]),
+      comments: n(obj.comments || obj["评论"]),
+      shares: n(obj.shares || obj["分享"] || obj["转发"]),
+      follows: n(obj.follows || obj["新增关注"] || obj["涨粉"]),
+      completion: obj.completion || obj["完播率"] ? Number(String(obj.completion || obj["完播率"]).replace("%","")) / (String(obj.completion || obj["完播率"]).includes("%") ? 100 : 1) : null,
+      notes: obj.notes || obj["备注"] || "",
+      pillar: obj.pillar || obj["内容支柱"] || "",
+      ageStage: obj.agestage || obj["年龄段"] || "",
+      pain: obj.pain || obj["痛点"] || "",
+      hook: obj.hook || obj["钩子"] || ""
+    };
+  });
+}
+
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    activeTab = button.dataset.tab;
+    document.querySelectorAll(".tab").forEach(tab => tab.classList.toggle("active", tab === button));
+    document.querySelectorAll(".tab-panel").forEach(panel => panel.classList.toggle("active", panel.id === `tab-${activeTab}`));
+  });
+});
+
+["pillarFilter", "formatFilter", "searchBox"].forEach(id => {
+  document.getElementById(id).addEventListener("input", renderAll);
+});
+
+document.getElementById("resetBtn").addEventListener("click", () => {
+  rawPosts = samplePosts.map(x => ({...x}));
+  document.getElementById("dataBadge").textContent = "数据状态：示例模板";
+  document.getElementById("dataMeta").textContent = "示例数据版 · 等待导入真实小红书数据 · 更新：2026-07-06";
+  document.getElementById("searchBox").value = "";
+  renderAll();
+});
+
+document.getElementById("csvFile").addEventListener("change", event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    const rows = parseCsv(reader.result);
+    if (rows.length) {
+      rawPosts = rows;
+      document.getElementById("dataBadge").textContent = "数据状态：已导入CSV";
+      document.getElementById("dataMeta").textContent = `${file.name} · ${rows.length}条内容 · 导入时间：${new Date().toLocaleString("zh-CN")}`;
+      renderAll();
+    } else {
+      alert("CSV没有识别到有效数据，请检查表头。");
+    }
+  };
+  reader.readAsText(file, "utf-8");
+});
+
+renderAll();
+</script>
+</body>
+</html>

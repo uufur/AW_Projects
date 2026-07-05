@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>成长维思 · 小红书起号策略大盘</title>
+<style>
+:root {
+  --bg: #f4f6f1;
+  --surface: #ffffff;
+  --surface-soft: #edf3ea;
+  --ink: #24312b;
+  --muted: #6c7870;
+  --line: #d8e0d5;
+  --green: #78967a;
+  --green-dark: #405c47;
+  --green-soft: #dce8db;
+  --blue: #7f9da0;
+  --orange: #c98f63;
+  --gold: #c7a96d;
+  --red: #b97872;
+  --shadow: 0 18px 48px rgba(54, 76, 61, 0.11);
+  --radius: 8px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    linear-gradient(135deg, rgba(36,49,43,0.045) 0 1px, transparent 1px 18px),
+    linear-gradient(135deg, rgba(120,150,122,0.16), transparent 32%),
+    radial-gradient(circle at 88% 6%, rgba(201,143,99,0.12), transparent 28%),
+    linear-gradient(315deg, rgba(127,157,160,0.08), transparent 36%),
+    var(--bg);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.58;
+}
+.wrap {
+  width: min(1280px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 28px 0 44px;
+}
+.wrap::before {
+  content: "";
+  position: fixed;
+  inset: auto 0 0 auto;
+  width: 360px;
+  height: 360px;
+  pointer-events: none;
+  background: radial-gradient(circle, rgba(120,150,122,0.16), transparent 68%);
+  filter: blur(6px);
+}
+.topbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 20px;
+  padding: 30px;
+  border-radius: 18px;
+  border: 1px solid rgba(64,92,71,0.12);
+  background:
+    linear-gradient(135deg, rgba(255,255,255,0.78), rgba(255,255,255,0.46)),
+    radial-gradient(circle at 92% 10%, rgba(120,150,122,0.18), transparent 32%);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.topbar::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 260px;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg width='160' height='160' viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%2378967a' stroke-opacity='.16' stroke-width='1'%3E%3Cpath d='M-20 110 C30 82 54 82 105 110 S180 138 220 106'/%3E%3Cpath d='M-20 138 C30 110 54 110 105 138 S180 166 220 134'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right top;
+  pointer-events: none;
+}
+.topbar > * { position: relative; z-index: 1; }
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--green-dark);
+  background: rgba(120,150,122,0.14);
+  border: 1px solid rgba(120,150,122,0.26);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+}
+h1 {
+  margin: 12px 0 6px;
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+.subtitle {
+  color: var(--muted);
+  max-width: 780px;
+  font-size: 15px;
+}
+.status-card {
+  min-width: 260px;
+  background:
+    linear-gradient(150deg, rgba(64,92,71,0.96), rgba(120,150,122,0.88)),
+    var(--green-dark);
+  color: #f7fbf5;
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+}
+.status-card strong { display: block; font-size: 15px; }
+.status-card span { display: block; color: rgba(247,251,245,0.76); font-size: 13px; margin-top: 6px; }
+.pill-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.pill {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.pill.green { color: var(--green-dark); border-color: rgba(95,143,115,0.34); background: rgba(95,143,115,0.10); }
+.pill.blue { color: #486c70; border-color: rgba(127,157,160,0.32); background: rgba(127,157,160,0.10); }
+.pill.orange { color: #7f563b; border-color: rgba(201,143,99,0.34); background: rgba(201,143,99,0.10); }
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.kpi-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 22px 0;
+}
+.kpi {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.74)),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 16px 42px rgba(37, 54, 48, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+.kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--green), #9fb99a);
+}
+.kpi .label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.kpi .value {
+  font-size: 30px;
+  font-weight: 800;
+  margin-top: 8px;
+}
+.kpi .note {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.section {
+  margin-top: 22px;
+}
+.section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 0;
+}
+.section-head p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  max-width: 620px;
+}
+.cards-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.cards-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.card {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.96), rgba(255,255,255,0.78)),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  box-shadow: 0 16px 44px rgba(37, 54, 48, 0.08);
+}
+.card h3 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+.card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+.big-decision {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 16px;
+  align-items: stretch;
+}
+.decision-panel {
+  background: linear-gradient(140deg, #2f4938 0%, #405c47 58%, #5f795f 100%);
+  color: #f4faf6;
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+.decision-panel::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  bottom: -70px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: rgba(220,232,219,0.12);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.decision-panel h2 { color: #fff; }
+.decision-panel p { color: rgba(244,250,246,0.78); margin: 8px 0 0; }
+.decision-list {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+}
+.decision-item {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(220,232,219,0.18);
+  color: #dce8db;
+  font-weight: 800;
+  font-size: 13px;
+}
+.decision-item strong { display: block; font-size: 14px; }
+.decision-item span { display: block; color: rgba(244,250,246,0.72); font-size: 12px; margin-top: 2px; }
+.timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+.stage {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.78)),
+    var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  min-height: 210px;
+  box-shadow: 0 14px 36px rgba(37, 54, 48, 0.07);
+}
+.stage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  border-radius: 8px 8px 0 0;
+  background: var(--green);
+}
+.stage:nth-child(2)::before { background: #8aa98b; }
+.stage:nth-child(3)::before { background: #6f9080; }
+.stage:nth-child(4)::before { background: #c7a96d; }
+.stage .day {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.stage h3 { margin: 6px 0 10px; }
+.stage ul, .task-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+.stage li, .task-list li {
+  color: var(--muted);
+  font-size: 13px;
+  padding-left: 14px;
+  position: relative;
+}
+.stage li::before, .task-list li::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--green);
+  position: absolute;
+  left: 0;
+  top: 0.72em;
+}
+.matrix {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 18px 46px rgba(37, 54, 48, 0.08);
+}
+.matrix th, .matrix td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  font-size: 13px;
+}
+.matrix th {
+  color: var(--muted);
+  background: var(--surface-soft);
+  font-size: 12px;
+}
+.matrix tr:last-child td { border-bottom: none; }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 5px;
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.tag.green { color: var(--green-dark); background: rgba(95,143,115,0.12); }
+.tag.blue { color: #486c70; background: rgba(127,157,160,0.12); }
+.tag.orange { color: #7f563b; background: rgba(201,143,99,0.12); }
+.tag.red { color: #8b514e; background: rgba(185,120,114,0.12); }
+.progress {
+  height: 9px;
+  border-radius: 999px;
+  background: #e6ebe7;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #78967a, #9fb99a);
+}
+.asset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.asset {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.asset img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.asset div {
+  padding: 12px;
+}
+.asset strong {
+  display: block;
+  font-size: 13px;
+}
+.asset span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 4px;
+}
+.footer-note {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 22px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+@media (max-width: 980px) {
+  .topbar, .big-decision { grid-template-columns: 1fr; display: grid; }
+  .kpi-grid, .cards-3, .cards-2, .timeline, .asset-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .wrap { width: min(100% - 24px, 1280px); padding-top: 18px; }
+  .kpi-grid, .cards-3, .cards-2, .timeline, .asset-grid { grid-template-columns: 1fr; }
+  .status-card { min-width: 0; }
+  .matrix { display: block; overflow-x: auto; white-space: nowrap; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">小红书单平台 · 起号阶段 · v1</div>
+      <h1>成长维思起号策略大盘</h1>
+      <div class="subtitle">给AW看的简版作战面板：当前不追求大而全，只把主页信号、选题信号、封面信号、互动信号四件事修顺。</div>
+      <div class="pill-row">
+        <span class="pill green">主阵地：小红书</span>
+        <span class="pill blue">阶段：冷启动重启</span>
+        <span class="pill orange">商业化：暂缓</span>
+      </div>
+    </div>
+    <aside class="status-card">
+      <strong>当前作战原则</strong>
+      <span>先用图文测选题，再把有效选题拍成视频。没跑通前，不放大、不三平台、不卖正式产品。</span>
+      <div class="progress"><div class="bar" style="width: 18%"></div></div>
+      <span>30天起号进度：准备进入图文测试</span>
+    </aside>
+  </header>
+
+  <section class="grid kpi-grid">
+    <div class="kpi">
+      <div class="label">当前粉丝</div>
+      <div class="value">39</div>
+      <div class="note">冷启动初期，先看信号不看虚荣指标</div>
+    </div>
+    <div class="kpi">
+      <div class="label">封面点击率</div>
+      <div class="value">6.4%</div>
+      <div class="note">第一目标提升到8%-10%</div>
+    </div>
+    <div class="kpi">
+      <div class="label">视频完播率</div>
+      <div class="value">4.4%</div>
+      <div class="note">先用图文测题，视频阶段修前3秒</div>
+    </div>
+    <div class="kpi">
+      <div class="label">互动基线</div>
+      <div class="value">0</div>
+      <div class="note">评论和收藏从低门槛CTA开始修</div>
+    </div>
+  </section>
+
+  <section class="section big-decision">
+    <div class="decision-panel">
+      <h2>这30天只打一场仗：找到可复制的内容公式</h2>
+      <p>账号目前不缺专业材料，缺的是平台能识别、用户愿意点、看完愿意收藏或评论的表达方式。</p>
+      <div class="decision-list">
+        <div class="decision-item">
+          <span class="check">1</span>
+          <div><strong>小红书优先</strong><span>先把一个平台打透，视频号和抖音暂不作为主任务。</span></div>
+        </div>
+        <div class="decision-item">
+          <span class="check">2</span>
+          <div><strong>图文先行</strong><span>图文试错便宜，先测痛点、关键词、封面和收藏价值。</span></div>
+        </div>
+        <div class="decision-item">
+          <span class="check">3</span>
+          <div><strong>视频后置</strong><span>只把已验证的选题拍成视频，重点修3秒钩子和B-roll节奏。</span></div>
+        </div>
+        <div class="decision-item">
+          <span class="check">4</span>
+          <div><strong>商业化暂缓</strong><span>粉丝和内容公式没跑通前，不推正式产品，最多做未来需求记录。</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid cards-1">
+      <div class="card">
+        <h3>定位口径</h3>
+        <p>心理咨询师妈妈，帮0-6岁家长先看懂孩子行为，再给可执行的养育方法。</p>
+      </div>
+      <div class="card">
+        <h3>目标用户</h3>
+        <p>正在搜索“孩子发脾气怎么办”“宝宝敏感期”“新手妈妈焦虑”的0-6岁孩子家长。</p>
+      </div>
+      <div class="card">
+        <h3>当前不做</h3>
+        <p>不刷量、不互赞、不讲占星、不直播、不做正式销售、不同时运营三平台。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>30天节点路线</h2>
+      <p>每个节点只服务一个问题：主页能不能承接、选题有没有信号、视频能不能留人。</p>
+    </div>
+    <div class="timeline">
+      <div class="stage">
+        <div class="day">Day 0-2</div>
+        <h3>主页与工作台</h3>
+        <ul>
+          <li>更新简介与视觉口径</li>
+          <li>建立数据表和选题库</li>
+          <li>处理封面水印</li>
+          <li>确定图文封面模板</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <div class="day">Day 1-5</div>
+        <h3>标签预热</h3>
+        <ul>
+          <li>搜索浏览育儿相关内容</li>
+          <li>收藏拆解同赛道爆款</li>
+          <li>每天1-2条高质量评论</li>
+          <li>关注少量优质参考账号</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <div class="day">Day 3-14</div>
+        <h3>图文测试</h3>
+        <ul>
+          <li>发布6-10条图文</li>
+          <li>测试5类高频选题</li>
+          <li>记录收藏率和评论信号</li>
+          <li>选出2个视频候选方向</li>
+        </ul>
+      </div>
+      <div class="stage">
+        <div class="day">Day 15-30</div>
+        <h3>视频验证</h3>
+        <ul>
+          <li>每周2条视频</li>
+          <li>每条30-60秒</li>
+          <li>前3秒必须有强钩子</li>
+          <li>复盘完播率和关注转化</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>内容支柱</h2>
+      <p>30天内只保留四类内容，不上产品种草，先让账号标签稳定。</p>
+    </div>
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th>内容支柱</th>
+          <th>占比</th>
+          <th>作用</th>
+          <th>样例选题</th>
+          <th>判断信号</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="tag green">高频痛点</span></td>
+          <td>40%</td>
+          <td>拿搜索和点击</td>
+          <td>孩子总发脾气怎么办？3步先稳住情绪</td>
+          <td>点击率、评论求助</td>
+        </tr>
+        <tr>
+          <td><span class="tag blue">天性解读</span></td>
+          <td>25%</td>
+          <td>建立差异化</td>
+          <td>孩子不爱分享不是自私，可能是阶段特征</td>
+          <td>收藏率、转发</td>
+        </tr>
+        <tr>
+          <td><span class="tag orange">养育实操</span></td>
+          <td>20%</td>
+          <td>建立专业信任</td>
+          <td>宝宝爱咬人爱尖叫？先看是不是敏感期</td>
+          <td>收藏率、关注转化</td>
+        </tr>
+        <tr>
+          <td><span class="tag red">妈妈情绪</span></td>
+          <td>15%</td>
+          <td>建立关系感</td>
+          <td>吼完孩子后后悔，不是你坏，是你太累了</td>
+          <td>评论共鸣、私信</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>本周操盘任务</h2>
+      <p>这一页可以直接拿给AW同步进度：哪些你做，哪些需要她配合。</p>
+    </div>
+    <div class="grid cards-3">
+      <div class="card">
+        <h3>操盘手负责</h3>
+        <ul class="task-list">
+          <li>整理30条竞品爆款选题</li>
+          <li>制作6-10条图文测试选题</li>
+          <li>建立每日数据记录表</li>
+          <li>每周日输出复盘结论</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>AW配合</h3>
+        <ul class="task-list">
+          <li>提供真实带娃B-roll素材</li>
+          <li>补拍翻书、互动、环境空镜</li>
+          <li>确认主页简介和头像</li>
+          <li>暂时不急着销售产品</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>发布前检查</h3>
+        <ul class="task-list">
+          <li>标题是否是家长会搜的问题</li>
+          <li>封面文字是否少于30%</li>
+          <li>是否有明确CTA</li>
+          <li>是否避开学术词和玄学词</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>AI示例图与真实素材库</h2>
+      <p>以下三张是AI生成的视觉参考图，不代表AW实际发布素材。真实发布素材建议后续统一放入 Codex/成长维思/素材库，便于做视频拆解、封面建议和B-roll调用。</p>
+    </div>
+    <div class="asset-grid">
+      <div class="asset">
+        <img src="/Users/luxiaojie/Library/Mobile Documents/com~apple~CloudDocs/AI Workspace/Workbuddy/成长维思/封面图/封面1_吸收性心智.png" alt="吸收性心智封面底图">
+        <div><strong>AI示例：宝宝观察场景</strong><span>参考方向：真实观察、发呆、专注力、0-6个月</span></div>
+      </div>
+      <div class="asset">
+        <img src="/Users/luxiaojie/Library/Mobile Documents/com~apple~CloudDocs/AI Workspace/Workbuddy/成长维思/封面图/封面2_精神胚胎.png" alt="精神胚胎封面底图">
+        <div><strong>AI示例：亲密陪伴场景</strong><span>参考方向：成长节奏、安全感、新手妈妈焦虑</span></div>
+      </div>
+      <div class="asset">
+        <img src="/Users/luxiaojie/Library/Mobile Documents/com~apple~CloudDocs/AI Workspace/Workbuddy/成长维思/封面图/封面3_无意识防御.png" alt="无意识防御封面底图">
+        <div><strong>AI示例：妈妈情绪场景</strong><span>参考方向：吼完后悔、夜间崩溃、妈妈自我照顾</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-head">
+      <h2>阶段门槛</h2>
+      <p>达不到就继续修当前环节，不强行进入下一阶段。</p>
+    </div>
+    <div class="grid cards-3">
+      <div class="card">
+        <h3>进入视频验证</h3>
+        <p>图文中至少2个方向表现高于账号均值，且有收藏或真实评论信号。</p>
+      </div>
+      <div class="card">
+        <h3>进入多平台</h3>
+        <p>小红书粉丝500+，有3条以上明显高于均值内容，且内容SOP稳定。</p>
+      </div>
+      <div class="card">
+        <h3>进入商业化</h3>
+        <p>有私信咨询或种子用户，且至少一次轻量付费或明确付费意愿验证。</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="footer-note">数据基线来自现有账号诊断材料；本页为AW沟通版策略大盘，详细执行口径见《成长维思_小红书起号执行策略_v1.md》。</p>
+</main>
+</body>
+</html>
