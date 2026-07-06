@@ -284,27 +284,37 @@ p {
   font-weight: 850;
 }
 .section-head {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 28px;
-  align-items: start;
+  display: block;
   margin-bottom: 30px;
 }
+.section-head > div:first-child { max-width: 940px; }
+.section-head > div:last-child {
+  max-width: 940px;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
 .one-line {
-  border-left: 3px solid var(--orange);
-  padding: 12px 0 12px 16px;
-  font-size: 17px;
-  font-weight: 900;
+  border: 1px solid rgba(201,131,80,.22);
+  border-left: 4px solid var(--orange);
+  border-radius: 12px;
+  padding: 13px 16px;
+  font-size: 15px;
+  font-weight: 850;
   color: var(--ink);
-  background: linear-gradient(90deg, rgba(201,131,80,.14), transparent);
+  background: rgba(201,131,80,.10);
 }
 .dark .one-line { color: #fff; }
 .action {
-  margin-top: 10px;
-  border-left: 3px solid var(--green);
-  padding: 10px 0 10px 16px;
+  margin-top: 0;
+  border: 1px solid rgba(120,149,122,.24);
+  border-left: 4px solid var(--green);
+  border-radius: 12px;
+  padding: 13px 16px;
   color: var(--ink-2);
-  font-size: 14px;
+  background: rgba(120,149,122,.10);
+  font-size: 15px;
   font-weight: 850;
 }
 .dark .action { color: #dfe8de; }
@@ -541,7 +551,7 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
   .book { padding: 16px 12px 56px; }
   .sheet { min-height: auto; padding: 30px 20px; border-radius: 14px; }
   .hero-grid,
-  .section-head,
+  .section-head > div:last-child,
   .decision-grid,
   .grid-2,
   .grid-3,
@@ -550,13 +560,27 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
   .timeline,
   .role-grid,
   .reassure { grid-template-columns: 1fr; }
-  .decision-grid { order: -1; }
   .progress { display: none; }
   .bar-row { grid-template-columns: 110px 1fr 44px; }
   .matrix-wrap { overflow-x: auto; }
   .matrix { min-width: 760px; }
   h1 { font-size: 38px; }
   h2 { font-size: 30px; }
+}
+@media screen and (max-width: 640px) {
+  .topbar { position: static; }
+  .book { padding: 12px 10px 44px; }
+  .sheet { padding: 26px 16px; }
+  .sheet.dark { min-height: 620px; }
+  .hero-grid { gap: 22px; }
+  h1 { font-size: 34px; line-height: 1.08; }
+  h2 { font-size: 27px; line-height: 1.16; }
+  .subtitle { font-size: 15px; margin-top: 16px; }
+  .meta-row { margin-top: 22px; }
+  .decision-grid { gap: 10px; }
+  .decision-card { min-height: auto; padding: 15px; }
+  .section-head > div:last-child { gap: 9px; margin-top: 14px; }
+  .one-line, .action { padding: 11px 13px; font-size: 14px; }
 }
 </style>
 </head>
@@ -620,8 +644,8 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
         <h2>现在不是内容没价值，而是账号还没有被平台和用户准确识别。</h2>
       </div>
       <div>
-        <div class="one-line">结论：先修“被看见”和“被看懂”，再追求增长。</div>
-        <div class="action">动作：小红书单平台、低成本图文测试、用数据决定视频方向。</div>
+        <div class="one-line">结论：先被看懂，再谈增长。</div>
+        <div class="action">动作：小红书单平台，图文先测试。</div>
       </div>
     </div>
     <div class="grid-4">
@@ -661,7 +685,7 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
       </div>
       <div>
         <div class="one-line">结论：方向保留，表达降维。</div>
-        <div class="action">动作：专业词先放后面，真实场景和用户痛点放前面。</div>
+        <div class="action">动作：场景在前，专业在后。</div>
       </div>
     </div>
     <div class="grid-2">
@@ -697,8 +721,8 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
         <h2>接下来先不追“发得多”，先追<span class="hl">测得准</span>。</h2>
       </div>
       <div>
-        <div class="one-line">结论：图文是测试工具，视频是放大工具。</div>
-        <div class="action">动作：先用6-10条图文找出高信号选题，再拍视频。</div>
+        <div class="one-line">结论：图文测试，视频放大。</div>
+        <div class="action">动作：6-10条图文后再拍视频。</div>
       </div>
     </div>
     <div class="flow">
@@ -730,7 +754,7 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
       </div>
       <div>
         <div class="one-line">结论：AW做主体，我做系统。</div>
-        <div class="action">动作：素材、选题、发布、复盘分工明确，减少AW的无效消耗。</div>
+        <div class="action">动作：素材归AW，操盘归我。</div>
       </div>
     </div>
     <div class="role-grid">
@@ -764,8 +788,8 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
         <h2>每个阶段只修一个环节，修好了再进入下一步。</h2>
       </div>
       <div>
-        <div class="one-line">结论：节奏慢一点，确定性更高。</div>
-        <div class="action">动作：没拿到信号前，不扩大平台、不急着商业化。</div>
+        <div class="one-line">结论：慢一点，更确定。</div>
+        <div class="action">动作：无信号，不放大。</div>
       </div>
     </div>
     <div class="timeline">
@@ -807,8 +831,8 @@ svg { width: 100%; height: auto; display: block; overflow: visible; }
         <h2>成长维思值得继续做。现在要做的是保护信心，也保护精力。</h2>
       </div>
       <div>
-        <div class="one-line">结论：用数据减少内耗，用分工降低压力。</div>
-        <div class="action">动作：AW配合素材和判断，我负责把每周结果讲清楚。</div>
+        <div class="one-line">结论：用数据减少内耗。</div>
+        <div class="action">动作：每周讲清结果。</div>
       </div>
     </div>
     <div class="reassure">
