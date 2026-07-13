@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>以安以安 · 小红书数据驾驶舱</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0F1115; --bg-soft:#161A21; --card:#1A1D24; --card-hover:#1F232C;
+  --border:#2A2E38; --border-light:#353A46;
+  --text:#E8EAED; --text-mid:#B8BCC4; --text-dim:#8A8F99; --text-faint:#5F6470;
+  --primary:#FF2442; --primary-soft:rgba(255,36,66,.12); --primary-glow:rgba(255,36,66,.25);
+  --green:#52C41A; --green-soft:rgba(82,196,26,.12);
+  --blue:#1890FF; --blue-soft:rgba(24,144,255,.12);
+  --orange:#FA8C16; --orange-soft:rgba(250,140,22,.12);
+  --purple:#9D6FE0; --purple-soft:rgba(157,111,224,.12);
+  --yellow:#FADB14; --yellow-soft:rgba(250,219,20,.12);
+  --radius:14px; --shadow:0 4px 20px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+.container{max-width:1280px;margin:0 auto;padding:24px 20px 60px}
+
+/* 顶部状态条 */
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:var(--bg-soft);border:1px solid var(--border);border-radius:10px;margin-bottom:20px;font-size:13px;color:var(--text-dim);flex-wrap:wrap;gap:10px}
+.topbar .live{display:inline-flex;align-items:center;gap:6px;color:var(--green)}
+.topbar .live::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.topbar a{color:var(--blue);text-decoration:none}
+.topbar a:hover{text-decoration:underline}
+.topbar .sep{color:var(--border-light);margin:0 8px}
+
+/* 头部 */
+.header{background:linear-gradient(135deg,var(--card) 0%,var(--bg-soft) 100%);border:1px solid var(--border);border-radius:var(--radius);padding:28px;margin-bottom:20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.header::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--primary),var(--purple),var(--blue))}
+.header-top{display:flex;align-items:flex-start;gap:20px;flex-wrap:wrap}
+.avatar{width:88px;height:88px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#FF6B7A);display:flex;align-items:center;justify-content:center;color:#fff;font-size:34px;font-weight:700;flex-shrink:0;box-shadow:0 4px 16px var(--primary-glow)}
+.header-info{flex:1;min-width:280px}
+.username{font-size:26px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.username .verified{background:var(--primary);color:#fff;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.bio{color:var(--text-mid);font-size:13px;line-height:1.8;white-space:pre-line;margin-bottom:10px}
+.meta-tags{display:flex;gap:8px;flex-wrap:wrap}
+.tag{background:var(--primary-soft);color:var(--primary);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;border:1px solid rgba(255,36,66,.2)}
+.tag.blue{background:var(--blue-soft);color:var(--blue);border-color:rgba(24,144,255,.2)}
+.tag.purple{background:var(--purple-soft);color:var(--purple);border-color:rgba(157,111,224,.2)}
+.tag.green{background:var(--green-soft);color:var(--green);border-color:rgba(82,196,26,.2)}
+.tag.orange{background:var(--orange-soft);color:var(--orange);border-color:rgba(250,140,22,.2)}
+
+.positioning-bar{margin-top:18px;padding:14px 18px;background:var(--primary-soft);border-left:3px solid var(--primary);border-radius:8px;font-size:13px}
+.positioning-bar strong{color:var(--primary)}
+.positioning-bar .arrow{color:var(--text-dim);margin:0 8px}
+
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;margin-top:20px}
+.stat-box{text-align:center;padding:16px 12px;background:var(--bg);border:1px solid var(--border);border-radius:12px;transition:.2s}
+.stat-box:hover{border-color:var(--primary);transform:translateY(-2px)}
+.stat-value{font-size:26px;font-weight:700;color:var(--primary);line-height:1.2}
+.stat-label{font-size:12px;color:var(--text-dim);margin-top:6px}
+.stat-trend{font-size:11px;color:var(--green);margin-top:4px}
+.stat-trend.down{color:var(--orange)}
+
+/* 卡片 */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-title{font-size:17px;font-weight:700;margin-bottom:18px;display:flex;align-items:center;gap:10px;color:var(--text)}
+.card-title .icon{font-size:20px}
+.card-title .sub{font-size:12px;color:var(--text-dim);font-weight:400;margin-left:auto}
+.card-title::after{content:"";flex:0;height:1px}
+
+/* 评分圆环 */
+.score-wrap{display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:24px}
+.score-circle{width:160px;height:160px;border-radius:50%;background:conic-gradient(var(--primary) 0deg,#2A2E38 0deg);display:flex;align-items:center;justify-content:center;position:relative}
+.score-circle::before{content:"";position:absolute;width:128px;height:128px;border-radius:50%;background:var(--card)}
+.score-inner{position:relative;text-align:center}
+.score-value{font-size:42px;font-weight:700;color:var(--primary);line-height:1}
+.score-label{font-size:11px;color:var(--text-dim);margin-top:4px}
+.score-grades{flex:1;min-width:280px;max-width:480px}
+.grade-item{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.grade-name{width:90px;font-size:13px;color:var(--text-mid);flex-shrink:0}
+.grade-bar{flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden;position:relative}
+.grade-fill{height:100%;border-radius:4px;transition:width 1s ease}
+.grade-val{width:38px;font-size:13px;font-weight:700;text-align:right;flex-shrink:0}
+
+/* 网格 */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+@media(max-width:880px){.grid-2{grid-template-columns:1fr}}
+
+.chart-box{position:relative;height:280px;margin:10px 0}
+.chart-box.sm{height:220px}
+
+/* 表格 */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:10px 12px;background:var(--bg-soft);color:var(--text-dim);font-weight:600;border-bottom:1px solid var(--border);font-size:12px;text-transform:uppercase;letter-spacing:.5px}
+.tbl td{padding:11px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:hover td{background:var(--card-hover)}
+.tbl tr:last-child td{border-bottom:none}
+.rank{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.r1{background:rgba(255,36,66,.15);color:var(--primary)}.r2{background:rgba(250,140,22,.15);color:var(--orange)}.r3{background:rgba(82,196,26,.15);color:var(--green)}.ro{background:var(--bg-soft);color:var(--text-dim)}
+.badge{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:500}
+.b-video{background:var(--blue-soft);color:var(--blue)}
+.b-image{background:var(--green-soft);color:var(--green)}
+.b-cat{background:var(--purple-soft);color:var(--purple)}
+.b-pattern{background:var(--orange-soft);color:var(--orange);font-size:10px}
+.likes-cell{font-weight:700;color:var(--primary)}
+
+/* 洞察列表 */
+.insight-list{list-style:none}
+.insight-item{padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:14px;align-items:flex-start}
+.insight-item:last-child{border-bottom:none}
+.insight-ico{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.i-good{background:var(--green-soft)}.i-bad{background:var(--primary-soft)}.i-info{background:var(--blue-soft)}.i-warn{background:var(--orange-soft)}
+.insight-body{flex:1}
+.insight-h{font-weight:600;margin-bottom:4px;font-size:14px}
+.insight-d{font-size:13px;color:var(--text-mid);line-height:1.7}
+
+/* 行动计划 */
+.action-list{counter-reset:act}
+.action-item{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);align-items:flex-start}
+.action-item:last-child{border-bottom:none}
+.action-num{width:30px;height:30px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.action-body{flex:1}
+.action-h{font-weight:600;margin-bottom:6px;font-size:14px}
+.action-d{font-size:13px;color:var(--text-mid);margin-bottom:8px;line-height:1.7}
+.action-todo{background:var(--bg);padding:10px 14px;border-radius:8px;font-size:12px;color:var(--text-mid);border-left:3px solid var(--primary)}
+.action-todo strong{color:var(--primary)}
+
+/* 策略追踪 */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:20px}
+.kpi-card{padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;text-align:center}
+.kpi-val{font-size:22px;font-weight:700;color:var(--text);margin:4px 0}
+.kpi-val.good{color:var(--green)}.kpi-val.warn{color:var(--orange)}.kpi-val.bad{color:var(--primary)}
+.kpi-name{font-size:12px;color:var(--text-dim)}
+.kpi-target{font-size:11px;color:var(--text-faint);margin-top:4px}
+
+.progress-track{margin-bottom:14px}
+.progress-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px;color:var(--text-mid)}
+.progress-bar{height:10px;background:var(--bg);border-radius:5px;overflow:hidden;border:1px solid var(--border)}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--primary),var(--purple));border-radius:5px;transition:width 1s}
+
+.plan-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.plan-tbl th{padding:8px 10px;background:var(--bg-soft);color:var(--text-dim);font-weight:600;text-align:left;border-bottom:1px solid var(--border);font-size:11px}
+.plan-tbl td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.plan-tbl tr:hover td{background:var(--card-hover)}
+.status-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600}
+.s-draft{background:var(--bg-soft);color:var(--text-dim)}
+.s-script{background:var(--blue-soft);color:var(--blue)}
+.s-shot{background:var(--orange-soft);color:var(--orange)}
+.s-published{background:var(--green-soft);color:var(--green)}
+
+/* 高亮提示框 */
+.tip-box{background:var(--bg-soft);border-left:3px solid var(--blue);padding:12px 16px;border-radius:8px;margin:12px 0;font-size:13px;color:var(--text-mid)}
+.tip-box strong{color:var(--blue)}
+.tip-box.primary{border-left-color:var(--primary)}.tip-box.primary strong{color:var(--primary)}
+.tip-box.green{border-left-color:var(--green)}.tip-box.green strong{color:var(--green)}
+
+/* 数据更新指引 */
+.update-guide{background:var(--bg-soft);border-radius:10px;padding:18px;margin-top:8px}
+.update-guide h4{font-size:14px;margin-bottom:10px;color:var(--text)}
+.update-guide ol{padding-left:20px;font-size:13px;color:var(--text-mid);line-height:2}
+.update-guide code{background:var(--bg);padding:2px 6px;border-radius:4px;font-family:"SF Mono",Consolas,monospace;font-size:12px;color:var(--green)}
+
+/* 矩阵热力图 */
+.matrix-tbl{width:100%;border-collapse:collapse;font-size:12px;margin-top:12px}
+.matrix-tbl th,.matrix-tbl td{padding:10px;text-align:center;border:1px solid var(--border)}
+.matrix-tbl th{background:var(--bg-soft);color:var(--text-dim);font-weight:600;font-size:11px}
+.matrix-cell{font-weight:700;color:var(--text)}
+.heat-0{background:var(--bg)}.heat-1{background:rgba(255,36,66,.15)}.heat-2{background:rgba(255,36,66,.3)}.heat-3{background:rgba(255,36,66,.5);color:#fff}.heat-4{background:rgba(255,36,66,.75);color:#fff}
+
+.footer{text-align:center;padding:24px 0;color:var(--text-faint);font-size:12px;border-top:1px solid var(--border);margin-top:30px}
+.footer .gen{color:var(--text-dim)}
+
+/* 标签切换 */
+.tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;flex-wrap:wrap}
+.tab{padding:8px 16px;font-size:13px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:.2s;font-weight:500}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--primary);border-bottom-color:var(--primary)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+
+/* 爆款公式卡 */
+.formula-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:16px}
+.formula-card{padding:16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;border-left:3px solid var(--primary)}
+.formula-card .fc-title{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:6px}
+.formula-card .fc-desc{font-size:12px;color:var(--text-mid);line-height:1.6}
+.formula-card .fc-example{margin-top:8px;padding:8px 10px;background:var(--bg-soft);border-radius:6px;font-size:11px;color:var(--text-dim);font-style:italic}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 顶部状态条 -->
+  <div class="topbar">
+    <span><span class="live">数据已加载</span></span>
+    <span>
+      <span>最近更新：<strong id="lastUpdated">-</strong></span>
+      <span class="sep">|</span>
+      <span>数据快照：<strong id="snapshotCount">-</strong> 份</span>
+      <span class="sep">|</span>
+      <a href="https://www.xiaohongshu.com/user/profile/6909b4570000000037007825" target="_blank" rel="noopener">查看原账号 →</a>
+    </span>
+  </div>
+
+  <!-- 头部 -->
+  <div class="header" id="header"></div>
+
+  <!-- 健康度评分 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span>账号健康度评分<span class="sub">综合诊断 · 100分制</span></div>
+    <div class="score-wrap">
+      <div class="score-circle" id="scoreCircle">
+        <div class="score-inner">
+          <div class="score-value" id="scoreValue">-</div>
+          <div class="score-label">综合健康度</div>
+        </div>
+      </div>
+      <div class="score-grades" id="scoreGrades"></div>
+    </div>
+  </div>
+
+  <!-- 数据趋势 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📈</span>数据趋势追踪<span class="sub">多快照对比 · 长期复盘</span></div>
+    <div class="chart-box"><canvas id="trendChart"></canvas></div>
+    <div class="tip-box">
+      <strong>追踪机制：</strong>每次抓取新数据后，在 <code>数据/latest.js</code> 的 <code>snapshots</code> 数组追加新快照，刷新页面即可看到趋势变化。当前快照数较少时趋势图为单点，建议至少每月抓取 1 次。
+    </div>
+  </div>
+
+  <!-- 内容矩阵 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span>内容矩阵分析<span class="sub">分类 × 形式 × 平均互动</span></div>
+    <div class="tabs">
+      <div class="tab active" data-tab="cat">分类表现</div>
+      <div class="tab" data-tab="format">形式分布</div>
+      <div class="tab" data-tab="matrix">交叉矩阵</div>
+      <div class="tab" data-tab="pattern">标题套路</div>
+    </div>
+    <div class="tab-panel active" id="panel-cat">
+      <div class="chart-box"><canvas id="categoryChart"></canvas></div>
+      <div style="overflow-x:auto"><table class="tbl" id="categoryTbl" style="margin-top:14px"></table></div>
+    </div>
+    <div class="tab-panel" id="panel-format">
+      <div class="grid-2">
+        <div class="chart-box sm"><canvas id="formatChart"></canvas></div>
+        <div class="chart-box sm"><canvas id="formatPerfChart"></canvas></div>
+      </div>
+    </div>
+    <div class="tab-panel" id="panel-matrix">
+      <div style="overflow-x:auto" id="matrixWrap"></div>
+    </div>
+    <div class="tab-panel" id="panel-pattern">
+      <div class="chart-box"><canvas id="patternChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 爆款公式 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🏆</span>爆款公式提炼<span class="sub">基于 TOP 笔记数据挖掘</span></div>
+    <div class="grid-2">
+      <div>
+        <h4 style="font-size:13px;color:var(--text-mid);margin-bottom:10px">📈 爆款 TOP 5</h4>
+        <table class="tbl" id="topTbl"></table>
+      </div>
+      <div>
+        <h4 style="font-size:13px;color:var(--text-mid);margin-bottom:10px">📉 待优化 BOTTOM 5</h4>
+        <table class="tbl" id="bottomTbl"></table>
+      </div>
+    </div>
+    <div class="formula-grid" id="formulaGrid"></div>
+  </div>
+
+  <!-- 诊断结论 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">💡</span>诊断结论<span class="sub">优势 / 风险 / 机会</span></div>
+    <ul class="insight-list" id="insightList"></ul>
+  </div>
+
+  <!-- 策略执行追踪 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🚀</span>策略执行追踪<span class="sub">新定位落地进度 · KPI 达成</span></div>
+
+    <div class="tip-box primary">
+      <strong>新定位：</strong><span id="newPositioning">-</span>
+      <div style="margin-top:6px;font-size:12px;color:var(--text-dim)">内容配比：<span id="contentMix">-</span></div>
+    </div>
+
+    <h4 style="font-size:14px;margin:18px 0 12px;color:var(--text)">KPI 达成情况（基于已发布笔记）</h4>
+    <div class="kpi-grid" id="kpiGrid"></div>
+
+    <h4 style="font-size:14px;margin:20px 0 12px;color:var(--text)">置顶 3 条进度</h4>
+    <div class="progress-track" id="pinnedProgress"></div>
+    <div style="overflow-x:auto;margin-top:8px"><table class="plan-tbl" id="pinnedTbl"></table></div>
+
+    <h4 style="font-size:14px;margin:24px 0 12px;color:var(--text)">15 条选题执行进度</h4>
+    <div class="progress-track" id="contentProgress"></div>
+    <div style="overflow-x:auto;margin-top:8px"><table class="plan-tbl" id="contentTbl"></table></div>
+  </div>
+
+  <!-- 30天行动计划 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🛠️</span>30 天行动计划<span class="sub">按优先级排序 · 可立即执行</span></div>
+    <div class="action-list" id="actionList"></div>
+  </div>
+
+  <!-- 数据更新指引 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📝</span>数据更新与复用指引<span class="sub">长期追踪机制</span></div>
+    <div class="update-guide">
+      <h4>🔄 如何更新账号数据</h4>
+      <ol>
+        <li>使用 playwright-scraper 或 xhs-creator-content-research skill 抓取最新主页数据</li>
+        <li>把新抓取的 JSON 整理为本驾驶舱格式，追加到 <code>数据/latest.js</code> 的 <code>snapshots</code> 数组末尾</li>
+        <li>同时归档一份到 <code>数据/snapshots/snapshot-YYYY-MM-DD.js</code>，便于历史回溯</li>
+        <li>刷新本页面，所有图表与诊断会自动重新计算</li>
+      </ol>
+      <h4 style="margin-top:16px">📋 如何更新策略执行进度</h4>
+      <ol>
+        <li>每发布一条笔记，编辑 <code>数据/strategy.js</code>，更新对应 <code>plan</code> 项的 <code>status</code> 和 <code>actualLikes / actualSaves / actualComments / actualViews</code></li>
+        <li>状态枚举：<code>选题 → 脚本中 → 待拍摄 → 已拍摄 → 已发布</code></li>
+        <li>刷新本页面，KPI 仪表盘与进度条会自动更新</li>
+      </ol>
+      <h4 style="margin-top:16px">📁 项目结构</h4>
+      <ol style="line-height:1.9">
+        <li><code>驾驶舱/index.html</code> — 本文件，数据可视化主入口</li>
+        <li><code>数据/latest.js</code> — 账号数据快照（多份历史快照）</li>
+        <li><code>数据/strategy.js</code> — 策略执行规划（置顶/选题/KPI）</li>
+        <li><code>数据/snapshots/</code> — 历史快照归档</li>
+        <li><code>策略/</code> — 5 份详细策略文档（定位/选题/爆款/日历/KPI）</li>
+        <li><code>复盘/</code> — 周/月复盘记录</li>
+        <li><code>选题库/topics.json</code> — 选题池</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>以安以安 · 小红书数据驾驶舱 v1.0</div>
+    <div class="gen" id="footerGen">数据来源：小红书主页公开数据 · 由 WorkBuddy 自动生成</div>
+  </div>
+</div>
+
+<script src="../数据/latest.js"></script>
+<script src="../数据/strategy.js"></script>
+<script>
+/* ========== 工具函数 ========== */
+const $ = s => document.querySelector(s);
+const fmt = n => (n===null||n===undefined||n==='') ? '-' : (typeof n==='number' ? n.toLocaleString() : n);
+const escapeHtml = s => String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ========== 数据准备 ========== */
+const DATA = window.XHS_DATA || {snapshots:[]};
+const STRAT = window.XHS_STRATEGY || {positioning:{},kpi:{},pinnedPlan:[],contentPlan15:[]};
+const SNAPSHOTS = DATA.snapshots || [];
+const LATEST = SNAPSHOTS[SNAPSHOTS.length-1] || {profile:{},notes:[]};
+const NOTES = LATEST.notes || [];
+const PROFILE = LATEST.profile || {};
+
+// 计算聚合分析
+function analyze(notes){
+  const total = notes.length;
+  const validNotes = notes.filter(n=>n.likes!==null&&n.likes!==undefined&&n.likes!=='');
+  const totalLikes = validNotes.reduce((s,n)=>s+(Number(n.likes)||0),0);
+  const avgLikes = total ? totalLikes/total : 0;
+  // 分类聚合
+  const catMap = {};
+  validNotes.forEach(n=>{
+    const c = n.category||'未分类';
+    if(!catMap[c]) catMap[c] = {count:0,likes:0,videos:0,images:0};
+    catMap[c].count++;
+    catMap[c].likes += Number(n.likes)||0;
+    if(n.type==='video') catMap[c].videos++; else catMap[c].images++;
+  });
+  const categories = Object.keys(catMap).map(k=>({name:k,count:catMap[k].count,likes:catMap[k].likes,avg:catMap[k].likes/catMap[k].count,videos:catMap[k].videos,images:catMap[k].images})).sort((a,b)=>b.avg-a.avg);
+  // 形式聚合
+  const videos = validNotes.filter(n=>n.type==='video');
+  const images = validNotes.filter(n=>n.type==='image');
+  const formatStats = {
+    video:{count:videos.length, likes:videos.reduce((s,n)=>s+(Number(n.likes)||0),0)},
+    image:{count:images.length, likes:images.reduce((s,n)=>s+(Number(n.likes)||0),0)}
+  };
+  formatStats.video.avg = formatStats.video.count ? formatStats.video.likes/formatStats.video.count : 0;
+  formatStats.image.avg = formatStats.image.count ? formatStats.image.likes/formatStats.image.count : 0;
+  // 套路聚合
+  const patMap = {};
+  validNotes.forEach(n=>{
+    const p = n.pattern||'其他';
+    if(!patMap[p]) patMap[p] = {count:0,likes:0};
+    patMap[p].count++;
+    patMap[p].likes += Number(n.likes)||0;
+  });
+  const patterns = Object.keys(patMap).map(k=>({name:k,count:patMap[k].count,likes:patMap[k].likes,avg:patMap[k].likes/patMap[k].count})).sort((a,b)=>b.avg-a.avg);
+  // TOP/BOTTOM
+  const sorted = [...validNotes].sort((a,b)=>(Number(b.likes)||0)-(Number(a.likes)||0));
+  return {total, totalLikes, avgLikes, categories, formatStats, patterns, top:sorted.slice(0,5), bottom:sorted.slice(-5).reverse()};
+}
+const ANA = analyze(NOTES);
+
+/* ========== 健康度评分 ========== */
+function calcScore(ana, profile){
+  // 内容一致性：分类越集中越高（基于 top1 分类占比）
+  const top1Share = ana.categories.length ? (ana.categories[0].count/ana.total) : 0;
+  const consistency = Math.round(Math.min(100, top1Share*100*1.5));
+  // 互动表现：基于平均点赞（10赞/篇为基准）
+  const engagement = Math.round(Math.min(100, (ana.avgLikes/30)*100));
+  // 更新活跃度：基于笔记总数（20篇为基准）
+  const activity = Math.round(Math.min(100, (ana.total/30)*100));
+  // 爆款潜力：基于 TOP1 笔记点赞（50赞为基准）
+  const viral = ana.top.length ? Math.round(Math.min(100, ((Number(ana.top[0].likes)||0)/100)*100)) : 0;
+  const overall = Math.round(consistency*0.25 + engagement*0.25 + activity*0.2 + viral*0.3);
+  return {overall, consistency, engagement, activity, viral};
+}
+const SCORE = calcScore(ANA, PROFILE);
+
+/* ========== 渲染头部 ========== */
+function renderHeader(){
+  const tags = [
+    {text:`📍 ${PROFILE.location||'-'}`, cls:''},
+    {text:`🎂 ${PROFILE.age||'-'}岁`, cls:'blue'},
+    {text:`👶 新手妈妈`, cls:'green'},
+    {text:`🔮 人本主义占星`, cls:'purple'}
+  ];
+  // 如果有新定位，叠加显示
+  const newPos = STRAT.positioning && STRAT.positioning.oneLineTagline;
+  $('#header').innerHTML = `
+    <div class="header-top">
+      <div class="avatar">以</div>
+      <div class="header-info">
+        <div class="username">${escapeHtml(PROFILE.nickname||'-')} ${newPos?'<span class="verified">转型中</span>':''}</div>
+        <div class="bio">${escapeHtml(PROFILE.bio||'')}</div>
+        <div class="meta-tags">${tags.map(t=>`<span class="tag ${t.cls}">${escapeHtml(t.text)}</span>`).join('')}</div>
+      </div>
+    </div>
+    ${newPos?`<div class="positioning-bar">
+      <strong>🎯 转型方向：</strong>${escapeHtml(STRAT.positioning.oneLineTagline)}
+      <span class="arrow">→</span>
+      <strong>新简介：</strong>${escapeHtml((STRAT.positioning.bio||'').replace(/\n/g,' · '))}
+    </div>`:''}
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-value">${fmt(PROFILE.following)}</div><div class="stat-label">关注</div></div>
+      <div class="stat-box"><div class="stat-value">${fmt(PROFILE.followers)}</div><div class="stat-label">粉丝</div></div>
+      <div class="stat-box"><div class="stat-value">${fmt(PROFILE.totalLikes)}</div><div class="stat-label">获赞与收藏</div></div>
+      <div class="stat-box"><div class="stat-value">${fmt(PROFILE.notesCount)}</div><div class="stat-label">笔记数</div></div>
+      <div class="stat-box"><div class="stat-value">${ANA.totalLikes}</div><div class="stat-label">总点赞（已抓取）</div></div>
+      <div class="stat-box"><div class="stat-value">${ANA.avgLikes.toFixed(1)}</div><div class="stat-label">篇均点赞</div></div>
+    </div>
+  `;
+  $('#lastUpdated').textContent = DATA.meta.lastUpdated;
+  $('#snapshotCount').textContent = SNAPSHOTS.length;
+}
+
+/* ========== 渲染评分 ========== */
+function renderScore(){
+  $('#scoreValue').textContent = SCORE.overall;
+  const deg = (SCORE.overall/100)*360;
+  $('#scoreCircle').style.background = `conic-gradient(var(--primary) ${deg}deg, #2A2E38 ${deg}deg)`;
+  const grades = [
+    {name:'内容一致性', val:SCORE.consistency, color:'var(--primary)'},
+    {name:'互动表现', val:SCORE.engagement, color:'var(--orange)'},
+    {name:'更新活跃度', val:SCORE.activity, color:'var(--blue)'},
+    {name:'爆款潜力', val:SCORE.viral, color:'var(--green)'}
+  ];
+  $('#scoreGrades').innerHTML = grades.map(g=>`
+    <div class="grade-item">
+      <div class="grade-name">${g.name}</div>
+      <div class="grade-bar"><div class="grade-fill" style="width:${g.val}%;background:${g.color}"></div></div>
+      <div class="grade-val">${g.val}</div>
+    </div>
+  `).join('');
+}
+
+/* ========== 趋势图 ========== */
+function renderTrend(){
+  const labels = SNAPSHOTS.map(s=>s.date);
+  const notesCount = SNAPSHOTS.map(s=>(s.notes||[]).length);
+  const totalLikes = SNAPSHOTS.map(s=>(s.notes||[]).reduce((sum,n)=>sum+(Number(n.likes)||0),0));
+  const ctx = $('#trendChart').getContext('2d');
+  new Chart(ctx, {
+    type:'line',
+    data:{labels, datasets:[
+      {label:'笔记数', data:notesCount, borderColor:'#1890FF', backgroundColor:'rgba(24,144,255,.1)', tension:.3, yAxisID:'y'},
+      {label:'总点赞', data:totalLikes, borderColor:'#FF2442', backgroundColor:'rgba(255,36,66,.1)', tension:.3, yAxisID:'y1'}
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#B8BCC4'}}},
+      scales:{
+        x:{ticks:{color:'#8A8F99'}, grid:{color:'#2A2E38'}},
+        y:{position:'left', ticks:{color:'#8A8F99'}, grid:{color:'#2A2E38'}},
+        y1:{position:'right', ticks:{color:'#8A8F99'}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+/* ========== 分类图表 ========== */
+let chartRefs = {};
+function renderCategory(){
+  const labels = ANA.categories.map(c=>c.name);
+  const avgs = ANA.categories.map(c=>+c.avg.toFixed(1));
+  const counts = ANA.categories.map(c=>c.count);
+  chartRefs.cat = new Chart($('#categoryChart').getContext('2d'), {
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'平均点赞', data:avgs, backgroundColor:'#FF2442', borderRadius:6, yAxisID:'y'},
+      {label:'笔记数', data:counts, backgroundColor:'rgba(157,111,224,.6)', borderRadius:6, yAxisID:'y1'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{color:'#B8BCC4'}}},
+      scales:{x:{ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}},y:{position:'left',ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}},y1:{position:'right',ticks:{color:'#8A8F99'},grid:{display:false}}}}
+  });
+  // 表格
+  const totalLikes = ANA.totalLikes || 1;
+  $('#categoryTbl').innerHTML = `<thead><tr><th>分类</th><th>笔记数</th><th>总点赞</th><th>平均点赞</th><th>视频/图文</th><th>点赞占比</th></tr></thead>
+    <tbody>${ANA.categories.map(c=>`<tr>
+      <td><span class="badge b-cat">${escapeHtml(c.name)}</span></td>
+      <td>${c.count} 篇</td>
+      <td>${c.likes}</td>
+      <td class="likes-cell">${c.avg.toFixed(1)}</td>
+      <td>${c.videos}视频 / ${c.images}图文</td>
+      <td>${(c.likes/totalLikes*100).toFixed(1)}%</td>
+    </tr>`).join('')}</tbody>`;
+}
+
+/* ========== 形式图表 ========== */
+function renderFormat(){
+  const f = ANA.formatStats;
+  chartRefs.fmt = new Chart($('#formatChart').getContext('2d'), {
+    type:'doughnut',
+    data:{labels:['图文','视频'], datasets:[{data:[f.image.count,f.video.count], backgroundColor:['#52C41A','#1890FF']}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#B8BCC4'}},title:{display:true,text:'笔记形式分布',color:'#B8BCC4'}}}
+  });
+  chartRefs.fmtPerf = new Chart($('#formatPerfChart').getContext('2d'), {
+    type:'bar',
+    data:{labels:['图文','视频'], datasets:[
+      {label:'篇均点赞', data:[+f.image.avg.toFixed(1),+f.video.avg.toFixed(1)], backgroundColor:['#52C41A','#1890FF'], borderRadius:6}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{labels:{color:'#B8BCC4'}},title:{display:true,text:'形式 × 篇均点赞',color:'#B8BCC4'}},
+      scales:{x:{ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}},y:{ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}}}}
+  });
+}
+
+/* ========== 矩阵热力图 ========== */
+function renderMatrix(){
+  const cats = ANA.categories;
+  // 构建 矩阵：分类 × 形式
+  const matrix = {};
+  NOTES.forEach(n=>{
+    const c = n.category||'未分类';
+    const t = n.type||'image';
+    if(!matrix[c]) matrix[c] = {video:0, image:0, videoLikes:0, imageLikes:0};
+    matrix[c][t] = (matrix[c][t]||0)+1;
+    matrix[c][t+'Likes'] = (matrix[c][t+'Likes']||0) + (Number(n.likes)||0);
+  });
+  // 计算热力等级（基于平均点赞）
+  const allAvgs = [];
+  cats.forEach(c=>{
+    const m = matrix[c.name];
+    if(m.video) allAvgs.push(m.videoLikes/m.video);
+    if(m.image) allAvgs.push(m.imageLikes/m.image);
+  });
+  const maxAvg = Math.max(...allAvgs, 1);
+  function heatLevel(avg){
+    if(avg===0) return 0;
+    const r = avg/maxAvg;
+    if(r<0.25) return 1;
+    if(r<0.5) return 2;
+    if(r<0.75) return 3;
+    return 4;
+  }
+  let html = `<table class="matrix-tbl"><thead><tr><th>分类 ＼ 形式</th><th>图文（篇 / 总赞 / 均赞）</th><th>视频（篇 / 总赞 / 均赞）</th><th>合计均赞</th></tr></thead><tbody>`;
+  cats.forEach(c=>{
+    const m = matrix[c.name];
+    const imgAvg = m.image ? (m.imageLikes/m.image).toFixed(1) : '-';
+    const vidAvg = m.video ? (m.videoLikes/m.video).toFixed(1) : '-';
+    const imgHeat = m.image ? heatLevel(m.imageLikes/m.image) : 0;
+    const vidHeat = m.video ? heatLevel(m.videoLikes/m.video) : 0;
+    html += `<tr>
+      <td><span class="badge b-cat">${escapeHtml(c.name)}</span></td>
+      <td class="matrix-cell heat-${imgHeat}">${m.image||0} / ${m.imageLikes||0} / ${imgAvg}</td>
+      <td class="matrix-cell heat-${vidHeat}">${m.video||0} / ${m.videoLikes||0} / ${vidAvg}</td>
+      <td class="matrix-cell">${c.avg.toFixed(1)}</td>
+    </tr>`;
+  });
+  html += `</tbody></table>
+    <div class="tip-box" style="margin-top:12px">
+      <strong>热力说明：</strong>颜色越深代表该分类×形式组合的篇均点赞越高。<strong>策略启示：</strong>优先发展"深色格"对应的分类×形式组合（高互动），砍掉"浅色格"低效组合。
+    </div>`;
+  $('#matrixWrap').innerHTML = html;
+}
+
+/* ========== 套路图表 ========== */
+function renderPattern(){
+  const labels = ANA.patterns.map(p=>p.name);
+  const avgs = ANA.patterns.map(p=>+p.avg.toFixed(1));
+  chartRefs.pat = new Chart($('#patternChart').getContext('2d'), {
+    type:'bar',
+    data:{labels, datasets:[{label:'平均点赞', data:avgs, backgroundColor:'#FA8C16', borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{labels:{color:'#B8BCC4'}}},
+      scales:{x:{ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}},y:{ticks:{color:'#8A8F99'},grid:{color:'#2A2E38'}}}}
+  });
+}
+
+/* ========== TOP/BOTTOM 表格 ========== */
+function renderTopBottom(){
+  const renderTbl = (sel, notes) => {
+    $(sel).innerHTML = `<thead><tr><th>#</th><th>标题</th><th>赞</th><th>类型</th><th>套路</th></tr></thead>
+      <tbody>${notes.map((n,i)=>`<tr>
+        <td><div class="rank ${i<3?'r'+(i+1):'ro'}">${i+1}</div></td>
+        <td style="max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="${escapeHtml(n.title)}">${escapeHtml(n.title)}</td>
+        <td class="likes-cell">${Number(n.likes)||0}</td>
+        <td><span class="badge ${n.type==='video'?'b-video':'b-image'}">${n.type==='video'?'视频':'图文'}</span></td>
+        <td><span class="badge b-pattern">${escapeHtml(n.pattern||'-')}</span></td>
+      </tr>`).join('')}</tbody>`;
+  };
+  renderTbl('#topTbl', ANA.top);
+  renderTbl('#bottomTbl', ANA.bottom);
+}
+
+/* ========== 爆款公式提炼 ========== */
+function renderFormula(){
+  const formulas = [
+    {title:'👶 萌态身体部位 + 口语化', desc:'具体身体部位（脚脚/手手/睡颜）+ 萌态动作（嘬奶/打哈欠）+ 口语化表达，最容易引发共鸣收藏。', example:'"人类幼崽嘬奶时的脚脚" — 86赞'},
+    {title:'🔢 月龄数字 + 反差情绪', desc:'具体月龄数字（两个多月/31周）+ 反差或惊讶情绪（心眼子/震惊），数字让内容更具体，反差制造好奇。', example:'"两个多月能有多少心眼子" — 56赞'},
+    {title:'🎭 影视角色 + 力量反差', desc:'影视角色名 + "淡/狠/温柔"等反差词 + 排山倒海式描述，借用热门 IP 流量。', example:'"谢南枝的力量淡却排山倒海" — 48赞'},
+    {title:'🎬 悬念场景 + 你永远', desc:'"你永远不知道"句式制造强悬念，搭配日常场景（拉开被子/打开门），点击率极高。', example:'"拉开被子前你永远不知道他在干嘛" — 40赞'},
+    {title:'⚡ 场景 + 情绪词 + 也太', desc:'生活场景 + 强情绪词（帅/美/震惊）+ "也太"放大感叹，适合生活风景/事件类内容。', example:'"钱塘江的无人机收队也太帅了" — 32赞'}
+  ];
+  $('#formulaGrid').innerHTML = formulas.map(f=>`
+    <div class="formula-card">
+      <div class="fc-title">${f.title}</div>
+      <div class="fc-desc">${f.desc}</div>
+      <div class="fc-example">📌 ${f.example}</div>
+    </div>
+  `).join('');
+}
+
+/* ========== 诊断结论 ========== */
+function renderInsights(){
+  const insights = [
+    {type:'good', ico:'👍', h:'育儿萌娃内容最强（数据已验证）', d:`${ANA.categories.find(c=>c.name==='育儿萌娃')?ANA.categories.find(c=>c.name==='育儿萌娃').count:0}篇育儿萌娃笔记篇均点赞最高，远超整体平均 ${ANA.avgLikes.toFixed(1)}。「人类幼崽嘬奶时的脚脚」拿到 86 赞，证明可爱、具体、有细节的育儿瞬间最容易爆。建议转型后保留这部分基因，但叠加 ERP 成长思维。`},
+    {type:'good', ico:'🎬', h:'视频形式整体表现更优', d:`${ANA.formatStats.video.count}篇视频篇均点赞 ${ANA.formatStats.video.avg.toFixed(1)}，${ANA.formatStats.image.count}篇图文篇均点赞 ${ANA.formatStats.image.avg.toFixed(1)}。视频更有动态感染力，建议新定位阶段保持 70% 视频 + 30% 图文（图文用于干货/清单/思维导图，提升收藏率）。`},
+    {type:'bad', ico:'⚠️', h:'账号方向混乱，缺乏垂直赛道', d:`内容横跨育儿、占星、影视、风景、情感 ${ANA.categories.length} 大类。用户刷到主页会困惑：这个博主到底是讲什么的？占星职业类篇均仅 ${ANA.categories.find(c=>c.name==='占星职业')?ANA.categories.find(c=>c.name==='占星职业').avg.toFixed(1):'-'} 赞，数据最差。新定位聚焦"理性逻辑型宝妈 + ERP 思维"是正确选择。`},
+    {type:'bad', ico:'⚠️', h:'低赞内容存在共性问题', d:`BOTTOM 5 笔记的共同问题：标题太宽泛（产后多久会想上班）、需要特定背景知识（影视角色）、缺乏情绪钩子（日子怎么可能和谁过都一样）。新内容必须每个标题都带钩子：数字/月龄、悬念、情绪反差、共鸣痛点至少占一个。`},
+    {type:'info', ico:'💎', h:'爆款标题有明确套路可复制', d:`高赞标题规律：具体数字（两个多月、31周）、情绪反差（却、最、震惊）、悬念感（你永远不知道）、共鸣场景（嘬奶、拉开被子）。新账号的 15 条选题钩子已按 6 种句式轮换设计，避免模板化降权。`},
+    {type:'warn', ico:'🔧', h:'转型期需先矫正标签再发力', d:`老号标签混乱，直接发新内容会被算法误判。建议执行 7 天养号 SOP：深度消费对标账号、隐藏旧笔记（不删除）、分批修改资料。验收标准：首页推荐占比 > 60%、单篇互动率 > 3%、粉丝画像以 28-38岁已婚女性为主。`}
+  ];
+  $('#insightList').innerHTML = insights.map(i=>`
+    <li class="insight-item">
+      <div class="insight-ico i-${i.type}">${i.ico}</div>
+      <div class="insight-body">
+        <div class="insight-h">${i.h}</div>
+        <div class="insight-d">${i.d}</div>
+      </div>
+    </li>
+  `).join('');
+}
+
+/* ========== KPI 仪表盘 ========== */
+function renderKPI(){
+  // 基于已发布的策略笔记计算实际 KPI
+  const published = [...(STRAT.pinnedPlan||[]), ...(STRAT.contentPlan15||[])].filter(p=>p.status==='已发布' && p.actualLikes!==null);
+  const totalLikes = published.reduce((s,p)=>s+(Number(p.actualLikes)||0),0);
+  const totalViews = published.reduce((s,p)=>s+(Number(p.actualViews)||0),0);
+  const totalSaves = published.reduce((s,p)=>s+(Number(p.actualSaves)||0),0);
+  const totalComments = published.reduce((s,p)=>s+(Number(p.actualComments)||0),0);
+  const engagementRate = totalViews ? ((totalLikes+totalSaves+totalComments)/totalViews*100) : 0;
+  const saveRate = totalViews ? (totalSaves/totalViews*100) : 0;
+  const commentRate = totalViews ? (totalComments/totalViews*100) : 0;
+
+  const kpis = [
+    {name:'已发布笔记', val:published.length, target:'目标 18 篇', cls:published.length>=3?'good':'warn'},
+    {name:'平均互动率', val:engagementRate.toFixed(1)+'%', target:'≥3% (养号期)', cls:engagementRate>=3?'good':(engagementRate>0?'warn':'bad')},
+    {name:'收藏率', val:saveRate.toFixed(1)+'%', target:'≥5% (养号期)', cls:saveRate>=5?'good':(saveRate>0?'warn':'bad')},
+    {name:'评论率', val:commentRate.toFixed(1)+'%', target:'≥2% (养号期)', cls:commentRate>=2?'good':(commentRate>0?'warn':'bad')},
+    {name:'累计点赞', val:totalLikes, target:'-', cls:totalLikes>0?'good':'bad'},
+    {name:'累计收藏', val:totalSaves, target:'-', cls:totalSaves>0?'good':'bad'}
+  ];
+  $('#kpiGrid').innerHTML = kpis.map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-name">${k.name}</div>
+      <div class="kpi-val ${k.cls}">${typeof k.val==='number'?k.val.toLocaleString():k.val}</div>
+      <div class="kpi-target">${k.target}</div>
+    </div>
+  `).join('');
+}
+
+/* ========== 策略执行追踪 ========== */
+function renderStrategy(){
+  // 新定位
+  $('#newPositioning').textContent = STRAT.positioning.oneLineTagline || '-';
+  $('#contentMix').textContent = STRAT.positioning.contentMix ? Object.values(STRAT.positioning.contentMix).join(' ｜ ') : '-';
+
+  // 置顶进度
+  const pinned = STRAT.pinnedPlan || [];
+  const pinnedDone = pinned.filter(p=>p.status==='已发布').length;
+  $('#pinnedProgress').innerHTML = `
+    <div class="progress-label"><span>置顶 3 条完成度</span><span>${pinnedDone} / ${pinned.length}</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pinned.length?pinnedDone/pinned.length*100:0}%"></div></div>
+  `;
+  $('#pinnedTbl').innerHTML = `<thead><tr><th>ID</th><th>标题</th><th>时长</th><th>钩子句式</th><th>状态</th><th>计划发布</th><th>实际点赞</th></tr></thead>
+    <tbody>${pinned.map(p=>`<tr>
+      <td><strong>${p.id}</strong></td>
+      <td style="max-width:180px">${escapeHtml(p.title)}</td>
+      <td>${p.duration||'-'}</td>
+      <td><span class="badge b-pattern">${escapeHtml(p.pattern||'-')}</span></td>
+      <td><span class="status-pill s-${statusKey(p.status)}">${escapeHtml(p.status)}</span></td>
+      <td>${p.publishDate||'-'}</td>
+      <td class="likes-cell">${p.actualLikes!==null?p.actualLikes:'-'}</td>
+    </tr>`).join('')}</tbody>`;
+
+  // 15条选题进度
+  const content = STRAT.contentPlan15 || [];
+  const contentDone = content.filter(p=>p.status==='已发布').length;
+  $('#contentProgress').innerHTML = `
+    <div class="progress-label"><span>15 条选题完成度</span><span>${contentDone} / ${content.length}</span></div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${content.length?contentDone/content.length*100:0}%"></div></div>
+  `;
+  $('#contentTbl').innerHTML = `<thead><tr><th>ID</th><th>阶段</th><th>钩子</th><th>句式</th><th>分类</th><th>状态</th><th>计划发布</th><th>点赞</th></tr></thead>
+    <tbody>${content.map(p=>`<tr>
+      <td><strong>${p.id}</strong></td>
+      <td>${escapeHtml(p.phase||'-')}</td>
+      <td style="max-width:280px">${escapeHtml(p.hook||'-')}</td>
+      <td><span class="badge b-pattern">${escapeHtml(p.pattern||'-')}</span></td>
+      <td><span class="badge b-cat">${escapeHtml(p.category||'-')}</span></td>
+      <td><span class="status-pill s-${statusKey(p.status)}">${escapeHtml(p.status)}</span></td>
+      <td>${p.publishDate||'-'}</td>
+      <td class="likes-cell">${p.actualLikes!==null?p.actualLikes:'-'}</td>
+    </tr>`).join('')}</tbody>`;
+}
+function statusKey(s){
+  return {'选题':'draft','脚本中':'script','待拍摄':'shot','已拍摄':'shot','已发布':'published'}[s]||'draft';
+}
+
+/* ========== 30天行动计划 ========== */
+function renderActions(){
+  const actions = [
+    {h:'第1周｜执行 7 天养号 SOP，矫正账号标签', d:'老号标签混乱（育儿/占星/影视混杂），直接发新内容会被算法误判。分3天隐藏旧笔记（每日4-5条设私密，不删除），分2天修改资料（间隔24小时避免异常），连续7天深度消费对标账号。', todo:'<strong>本周动作：</strong>隐藏全部旧笔记（保留2条生活化过渡），完成资料修改，连续7天每天深度消费30分钟+对标账号，每天发1条图文笔记测试流量。'},
+    {h:'第2周｜发布置顶 3 条，立住新人设', d:'按 Day1/Day3/Day5 节奏发布3条置顶视频：人设故事（60-70秒）→ ERP 方法论（90秒）→ 独处空间场景（50-60秒）。每条发布后60分钟内逐条回复评论，拉高初始推流权重。', todo:'<strong>本周动作：</strong>按修订版时长拍摄+发布3条置顶视频，正文植入 SEO 关键词（产后自我价值重建/女性情绪管理/宝妈精神自留地），话题标签控制在5个以内。'},
+    {h:'第3-5周｜执行 15 条选题，每周3条稳定更新', d:'15条选题分3阶段递进：阶段一立人设（5条）→ 阶段二财商思维（5条）→ 阶段三场景种草（5条）。每周一/三/五晚20:30发布，钩子句式按6种轮换（反常识/数据/痛点/故事/场景/提问），结尾互动按3种轮换（二选一/征集/预言）。', todo:'<strong>本周动作：</strong>按 contentPlan15 顺序执行，每周穿插1-2条图文（ERP思维导图/金句卡/清单体），降低视频制作压力同时测试图文流量。'},
+    {h:'持续｜每周日晚30分钟数据复盘', d:'起号阶段最需要快速迭代。复盘模板：本周播放/互动/收藏最高笔记及原因分析，表现最差笔记及原因，下周加倍哪个方向、减少哪个方向、新增测试什么方向。', todo:'<strong>本周动作：</strong>在 <code>复盘/</code> 目录创建 weekly-YYYY-MM-DD.md，用固定模板记录；更新 strategy.js 中已发布笔记的实际数据；刷新驾驶舱查看 KPI 达成情况。'},
+    {h:'第6周起｜从内容沉淀转向商业化铺垫', d:'前5条视频立人设后，第11条开始自然露出书洞、吧台、手账本、桌面摆件，潜移默化向品牌方释放适配品类。不主动发广告，等待蒲公英后台主动邀约。前6个月不接理财类广告（防火墙）。', todo:'<strong>本周动作：</strong>检查前10条笔记的首页推荐占比是否 > 60%，若达标开始第11条场景种草内容；若未达标，回到养号SOP继续矫正标签。'}
+  ];
+  $('#actionList').innerHTML = actions.map((a,i)=>`
+    <div class="action-item">
+      <div class="action-num">${i+1}</div>
+      <div class="action-body">
+        <div class="action-h">${a.h}</div>
+        <div class="action-d">${a.d}</div>
+        <div class="action-todo">${a.todo}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ========== Tab 切换 ========== */
+document.querySelectorAll('.tab').forEach(t=>{
+  t.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));
+    t.classList.add('active');
+    $('#panel-'+t.dataset.tab).classList.add('active');
+    // 切换后重绘图表（避免初次隐藏时尺寸为0）
+    setTimeout(()=>{
+      Object.values(chartRefs).forEach(c=>c&&c.resize&&c.resize());
+    },50);
+  });
+});
+
+/* ========== 初始化 ========== */
+renderHeader();
+renderScore();
+renderTrend();
+renderCategory();
+renderFormat();
+renderPattern();
+renderMatrix();
+renderTopBottom();
+renderFormula();
+renderInsights();
+renderKPI();
+renderStrategy();
+renderActions();
+$('#footerGen').textContent = `数据来源：小红书主页公开数据 · 最近更新 ${DATA.meta.lastUpdated} · 由 WorkBuddy 自动生成`;
+</script>
+</body>
+</html>
